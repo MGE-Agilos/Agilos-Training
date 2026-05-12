@@ -1,0 +1,2225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Qlik AI Certification Prep</title>
+<style>
+:root {
+  --green: #009845;
+  --navy: #1e3a5f;
+  --navy-light: #2d5282;
+  --bg: #f4f6f9;
+  --card: #ffffff;
+  --text: #1a1a2e;
+  --text-muted: #6b7280;
+  --border: #e2e8f0;
+  --green-light: #e8f5ed;
+  --correct: #16a34a;
+  --wrong: #dc2626;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+#header {
+  background: var(--navy);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+#header h1 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  flex: 1;
+  letter-spacing: .3px;
+}
+#header h1 span { color: var(--green); }
+
+/* ── Search Bar ── */
+#search-wrap {
+  position: relative;
+  margin: 0 16px;
+}
+#search-input {
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 22px;
+  color: #fff;
+  font-size: .85rem;
+  padding: 7px 36px 7px 14px;
+  width: 220px;
+  outline: none;
+  transition: all .2s;
+}
+#search-input::placeholder { color: rgba(255,255,255,.5); }
+#search-input:focus {
+  background: rgba(255,255,255,.2);
+  border-color: var(--green);
+  width: 280px;
+}
+#search-icon {
+  position: absolute;
+  right: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,.5);
+  font-size: .9rem;
+  pointer-events: none;
+}
+
+/* ── Search Results View ── */
+#search-view {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px;
+  display: none;
+}
+.search-results-page { max-width: 820px; margin: 0 auto; }
+.search-results-page h2 { color: var(--navy); font-size: 1.3rem; margin-bottom: 6px; }
+.search-meta { color: var(--text-muted); font-size: .87rem; margin-bottom: 24px; }
+.search-result-card {
+  background: var(--card);
+  border-radius: 10px;
+  padding: 18px 22px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all .18s;
+}
+.search-result-card:hover { border-color: var(--green); transform: translateY(-1px); }
+.search-result-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.search-result-module {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  padding: 2px 10px;
+  border-radius: 99px;
+  color: #fff;
+}
+.search-result-lesson { font-weight: 700; color: var(--navy); font-size: .97rem; }
+.search-result-excerpt {
+  font-size: .86rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+.search-result-excerpt mark {
+  background: #fff176;
+  color: var(--text);
+  border-radius: 2px;
+  padding: 0 2px;
+  font-weight: 600;
+}
+.search-no-results {
+  text-align: center;
+  padding: 60px 0;
+  color: var(--text-muted);
+}
+.search-no-results .no-icon { font-size: 2.5rem; margin-bottom: 12px; }
+
+#nav-tabs { display: flex; gap: 4px; }
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,.7);
+  cursor: pointer;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: .9rem;
+  font-weight: 500;
+  transition: all .2s;
+}
+.tab-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
+.tab-btn.active { background: var(--green); color: #fff; }
+
+/* ── Layout ── */
+#app { display: flex; height: calc(100vh - 56px); }
+
+/* ── Sidebar ── */
+#sidebar {
+  width: 280px;
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+.module-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background .15s;
+  user-select: none;
+}
+.module-header:hover { background: var(--bg); }
+.module-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.module-title { font-weight: 600; font-size: .82rem; flex: 1; line-height: 1.3; }
+.module-chevron { font-size: .7rem; color: var(--text-muted); transition: transform .2s; }
+.module-header.open .module-chevron { transform: rotate(90deg); }
+.lesson-list { display: none; }
+.module-header.open + .lesson-list { display: block; }
+.lesson-item {
+  padding: 10px 16px 10px 36px;
+  font-size: .82rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  transition: all .15s;
+  position: relative;
+}
+.lesson-item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: transparent;
+}
+.lesson-item:hover { background: var(--bg); color: var(--text); }
+.lesson-item.active {
+  background: var(--green-light);
+  color: var(--green);
+  font-weight: 600;
+}
+.lesson-item.active::before { background: var(--green); }
+.lesson-item.done { color: var(--text); }
+.lesson-item.done::after {
+  content: '✓';
+  float: right;
+  color: var(--correct);
+  font-size: .75rem;
+}
+
+/* ── Content ── */
+#content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px;
+}
+.lesson-page { max-width: 820px; margin: 0 auto; }
+.lesson-page h2 {
+  font-size: 1.5rem;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+.lesson-page .module-label {
+  font-size: .8rem;
+  color: var(--green);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  margin-bottom: 20px;
+}
+.lesson-page h3 {
+  font-size: 1.1rem;
+  color: var(--navy);
+  margin: 24px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--green);
+  display: inline-block;
+}
+.lesson-page p { margin-bottom: 14px; line-height: 1.7; }
+.lesson-page ul, .lesson-page ol {
+  margin: 0 0 14px 20px;
+  line-height: 1.7;
+}
+.lesson-page li { margin-bottom: 6px; }
+.info-box {
+  background: var(--green-light);
+  border-left: 4px solid var(--green);
+  padding: 14px 18px;
+  border-radius: 0 8px 8px 0;
+  margin: 16px 0;
+}
+.info-box strong { color: var(--green); }
+.warning-box {
+  background: #fff8e1;
+  border-left: 4px solid #f59e0b;
+  padding: 14px 18px;
+  border-radius: 0 8px 8px 0;
+  margin: 16px 0;
+}
+.definition {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 10px 0;
+}
+.definition dt { font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.definition dd { margin-left: 0; color: var(--text-muted); font-size: .93rem; line-height: 1.6; }
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+.comparison-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+}
+.comparison-card h4 { color: var(--navy); margin-bottom: 8px; font-size: .9rem; }
+.comparison-card ul { margin-left: 16px; font-size: .87rem; }
+.lesson-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.lesson-nav button {
+  padding: 10px 22px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: .88rem;
+  transition: all .2s;
+}
+.btn-prev {
+  background: transparent;
+  color: var(--navy);
+  border: 1px solid var(--border) !important;
+}
+.btn-prev:hover { background: var(--bg); }
+.btn-next {
+  background: var(--green);
+  color: #fff;
+}
+.btn-next:hover { background: #007a38; }
+.btn-complete {
+  background: var(--navy);
+  color: #fff;
+}
+.btn-complete:hover { background: var(--navy-light); }
+
+/* ── Quiz ── */
+#quiz-view {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px;
+  display: none;
+}
+.quiz-header {
+  max-width: 820px;
+  margin: 0 auto 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.quiz-header h2 { color: var(--navy); font-size: 1.3rem; }
+.quiz-stats {
+  display: flex;
+  gap: 20px;
+  font-size: .85rem;
+  color: var(--text-muted);
+}
+.quiz-stats span strong { color: var(--text); }
+.progress-bar {
+  max-width: 820px;
+  margin: 0 auto 28px;
+  background: var(--border);
+  border-radius: 99px;
+  height: 6px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 99px;
+  transition: width .3s;
+}
+.question-card {
+  max-width: 820px;
+  margin: 0 auto;
+  background: var(--card);
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+}
+.question-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.question-num { font-size: .8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
+.module-tag {
+  font-size: .75rem;
+  background: var(--green-light);
+  color: var(--green);
+  padding: 2px 10px;
+  border-radius: 99px;
+  font-weight: 600;
+}
+.question-text {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--navy);
+  line-height: 1.5;
+  margin-bottom: 22px;
+}
+.options { display: flex; flex-direction: column; gap: 10px; }
+.option-btn {
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  padding: 13px 16px;
+  text-align: left;
+  cursor: pointer;
+  font-size: .92rem;
+  line-height: 1.45;
+  transition: all .15s;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.option-btn:hover:not(:disabled) {
+  border-color: var(--green);
+  background: var(--green-light);
+}
+.option-letter {
+  font-weight: 700;
+  color: var(--text-muted);
+  min-width: 20px;
+  font-size: .85rem;
+}
+.option-btn.selected { border-color: var(--navy); background: #eef2f9; }
+.option-btn.correct { border-color: var(--correct) !important; background: #f0fdf4 !important; }
+.option-btn.wrong { border-color: var(--wrong) !important; background: #fef2f2 !important; }
+.option-btn.correct .option-letter { color: var(--correct); }
+.option-btn.wrong .option-letter { color: var(--wrong); }
+.option-btn:disabled { cursor: default; }
+.explanation-box {
+  margin-top: 18px;
+  padding: 14px;
+  background: #f0fdf4;
+  border-radius: 8px;
+  border-left: 3px solid var(--correct);
+  font-size: .88rem;
+  line-height: 1.6;
+  display: none;
+}
+.explanation-box.wrong-exp { background: #fef2f2; border-color: var(--wrong); }
+.quiz-controls {
+  max-width: 820px;
+  margin: 20px auto 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.quiz-btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: .9rem;
+  transition: all .2s;
+}
+#btn-submit { background: var(--navy); color: #fff; }
+#btn-submit:hover { background: var(--navy-light); }
+#btn-submit:disabled { opacity: .4; cursor: default; }
+#btn-next-q { background: var(--green); color: #fff; display: none; }
+#btn-next-q:hover { background: #007a38; }
+#btn-prev-q { background: transparent; color: var(--navy); border: 1px solid var(--border); }
+#btn-prev-q:hover { background: var(--bg); }
+.quiz-filter {
+  display: flex;
+  gap: 8px;
+  max-width: 820px;
+  margin: 0 auto 20px;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  padding: 6px 14px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  cursor: pointer;
+  font-size: .8rem;
+  font-weight: 500;
+  transition: all .15s;
+}
+.filter-btn:hover, .filter-btn.active {
+  background: var(--navy);
+  color: #fff;
+  border-color: var(--navy);
+}
+
+/* ── Quiz Results ── */
+#results-view {
+  max-width: 820px;
+  margin: 0 auto;
+  display: none;
+}
+.results-hero {
+  background: var(--navy);
+  color: #fff;
+  border-radius: 12px;
+  padding: 32px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+.results-hero .big-score {
+  font-size: 4rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.results-hero .score-label { font-size: 1rem; opacity: .8; margin-bottom: 4px; }
+.results-hero .verdict {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-top: 12px;
+  color: var(--green);
+}
+.module-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.module-result-card {
+  background: var(--card);
+  border-radius: 10px;
+  padding: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+.module-result-card h4 { font-size: .85rem; color: var(--text-muted); margin-bottom: 8px; }
+.module-result-card .mod-score { font-size: 1.5rem; font-weight: 800; color: var(--navy); }
+.module-result-card .mod-bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 99px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.module-result-card .mod-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: var(--green);
+  transition: width .6s ease;
+}
+.results-actions { display: flex; gap: 12px; justify-content: center; margin-top: 8px; }
+.results-actions button {
+  padding: 11px 26px;
+  border-radius: 7px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: .9rem;
+}
+.btn-restart { background: var(--green); color: #fff; }
+.btn-restart:hover { background: #007a38; }
+.btn-review { background: transparent; color: var(--navy); border: 1px solid var(--border) !important; }
+.btn-review:hover { background: var(--bg); }
+
+/* ── Progress View ── */
+#progress-view {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px;
+  display: none;
+}
+.progress-page { max-width: 820px; margin: 0 auto; }
+.progress-page h2 { color: var(--navy); font-size: 1.4rem; margin-bottom: 24px; }
+.progress-modules { display: grid; gap: 16px; }
+.progress-module-card {
+  background: var(--card);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+.progress-module-card h3 { font-size: 1rem; color: var(--navy); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.prog-bar-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+.prog-label { font-size: .8rem; color: var(--text-muted); width: 80px; }
+.prog-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.prog-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 99px;
+  transition: width .4s;
+}
+.prog-pct { font-size: .8rem; font-weight: 700; color: var(--navy); min-width: 36px; text-align: right; }
+.best-score-tag {
+  display: inline-block;
+  font-size: .75rem;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-weight: 600;
+}
+.score-pass { background: var(--green-light); color: var(--green); }
+.score-fail { background: #fef2f2; color: var(--wrong); }
+.reset-btn {
+  margin-top: 20px;
+  padding: 9px 20px;
+  background: transparent;
+  border: 1px solid var(--wrong);
+  color: var(--wrong);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: .85rem;
+  font-weight: 600;
+  transition: all .2s;
+}
+.reset-btn:hover { background: #fef2f2; }
+
+/* ── Welcome screen ── */
+.welcome {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+.welcome h2 { color: var(--navy); font-size: 1.5rem; margin-bottom: 10px; }
+.welcome p { color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; }
+.module-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+.module-card {
+  background: var(--card);
+  border-radius: 10px;
+  padding: 18px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+  border: 2px solid transparent;
+  transition: all .2s;
+}
+.module-card:hover { border-color: var(--green); transform: translateY(-2px); }
+.module-card-dot {
+  width: 12px; height: 12px; border-radius: 50%; margin-bottom: 12px;
+}
+.module-card h3 { font-size: .9rem; color: var(--navy); margin-bottom: 6px; line-height: 1.3; }
+.module-card p { font-size: .78rem; color: var(--text-muted); }
+.module-card .lesson-count { font-size: .75rem; color: var(--green); font-weight: 600; margin-top: 8px; }
+
+@media (max-width: 768px) {
+  #sidebar { display: none; }
+  .comparison-grid { grid-template-columns: 1fr; }
+  #content, #quiz-view, #progress-view { padding: 20px 16px; }
+}
+
+/* ── Podcast Player ── */
+#podcast-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--navy);
+  color: #fff;
+  padding: 12px 24px;
+  display: none;
+  align-items: center;
+  gap: 16px;
+  z-index: 200;
+  box-shadow: 0 -4px 16px rgba(0,0,0,.25);
+  border-top: 2px solid var(--green);
+}
+#podcast-bar.visible { display: flex; }
+.pod-info { flex: 0 0 auto; max-width: 240px; }
+.pod-title { font-weight: 700; font-size: .85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pod-sub { font-size: .72rem; color: rgba(255,255,255,.55); margin-top: 1px; }
+.pod-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.pod-btn {
+  background: rgba(255,255,255,.1);
+  border: none; border-radius: 50%;
+  width: 36px; height: 36px;
+  color: #fff; cursor: pointer; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s;
+}
+.pod-btn:hover { background: var(--green); }
+.pod-btn.play-main { width: 42px; height: 42px; font-size: 1.2rem; background: var(--green); }
+.pod-btn.play-main:hover { background: #007a38; }
+.pod-progress-wrap { flex: 1; display: flex; align-items: center; gap: 10px; }
+.pod-time { font-size: .75rem; color: rgba(255,255,255,.65); flex-shrink: 0; white-space: nowrap; }
+.pod-seek {
+  flex: 1; height: 4px; border-radius: 99px;
+  background: rgba(255,255,255,.2);
+  cursor: pointer; position: relative; appearance: none;
+  accent-color: var(--green);
+}
+.pod-speed {
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 6px; color: #fff;
+  font-size: .75rem; padding: 4px 8px;
+  cursor: pointer; flex-shrink: 0;
+}
+.pod-speed:hover { background: rgba(255,255,255,.2); }
+.pod-close {
+  background: none; border: none; color: rgba(255,255,255,.45);
+  font-size: 1.1rem; cursor: pointer; padding: 4px; flex-shrink: 0;
+  transition: color .15s;
+}
+.pod-close:hover { color: #fff; }
+#podcast-btn {
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 20px;
+  color: #fff;
+  cursor: pointer;
+  padding: 6px 14px;
+  font-size: .82rem;
+  font-weight: 600;
+  display: flex; align-items: center; gap: 6px;
+  transition: all .2s;
+  white-space: nowrap;
+  margin-right: 4px;
+}
+#podcast-btn:hover { background: var(--green); border-color: var(--green); }
+/* push app content up when player is open */
+body.pod-open #app { padding-bottom: 72px; }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <h1>Qlik <span>AI</span> Certification Prep</h1>
+  <div id="search-wrap">
+    <input type="text" id="search-input" placeholder="Search lessons…" oninput="handleSearch(this.value)" autocomplete="off" />
+    <span id="search-icon">⌕</span>
+  </div>
+  <button id="podcast-btn" onclick="togglePodcast()">🎧 Podcast</button>
+  <div id="nav-tabs">
+    <button class="tab-btn active" onclick="showView('study')">Study</button>
+    <button class="tab-btn" onclick="showView('quiz')">Quiz</button>
+    <button class="tab-btn" onclick="showView('progress')">Progress</button>
+  </div>
+</div>
+
+<div id="app">
+  <!-- Sidebar -->
+  <div id="sidebar"></div>
+
+  <!-- Study content -->
+  <div id="content"></div>
+
+  <!-- Quiz view -->
+  <div id="quiz-view"></div>
+
+  <!-- Progress view -->
+  <div id="progress-view"></div>
+
+  <!-- Search results view -->
+  <div id="search-view"></div>
+</div>
+
+<script>
+/* ====================================================
+   DATA
+==================================================== */
+const MODULE_COLORS = ['#009845','#1e3a5f','#0073b7','#7b2d8b','#e65c00'];
+
+const MODULES = [
+  {
+    id: 1, title: 'Introduction to AI for Business',
+    color: '#009845', lessons: [
+      { id:'1.1', title:'AI Literacy — Definitions & Concepts' },
+      { id:'1.2', title:'Business Use Cases for AI' },
+      { id:'1.3', title:'AI Timeline & Everyday AI' },
+      { id:'1.4', title:'Limitations & Concerns' },
+      { id:'1.5', title:'Review & Key Takeaways' }
+    ]
+  },
+  {
+    id: 2, title: 'Understanding GenAI',
+    color: '#1e3a5f', lessons: [
+      { id:'2.1', title:'A Brief History of AI' },
+      { id:'2.2', title:'AI Tribes & Approaches' },
+      { id:'2.3', title:'GenAI, LLMs & Foundation Models' },
+      { id:'2.4', title:'Large Language Models Deep Dive' },
+      { id:'2.5', title:'LLM Application Lifecycle' },
+      { id:'2.6', title:'Bringing LLMs to Production' },
+      { id:'2.7', title:'Security & Ethical Considerations' }
+    ]
+  },
+  {
+    id: 3, title: 'Qlik Answers',
+    color: '#0073b7', lessons: [
+      { id:'3.1', title:'What is Qlik Answers?' },
+      { id:'3.2', title:'RAG Architecture & Knowledge Bases' },
+      { id:'3.3', title:'Setting Up Qlik Answers' },
+      { id:'3.4', title:'Deploying & Administrating' },
+      { id:'3.5', title:'System Architecture & Third-Party Tech' },
+      { id:'3.6', title:'Integrating Qlik Answers' }
+    ]
+  },
+  {
+    id: 4, title: 'Understanding Qlik Predict',
+    color: '#7b2d8b', lessons: [
+      { id:'4.1', title:'Machine Learning Concepts & AutoML' },
+      { id:'4.2', title:'Identifying AutoML Use Cases' },
+      { id:'4.3', title:'Formulating the ML Question' },
+      { id:'4.4', title:'Preparing the AutoML Dataset' },
+      { id:'4.5', title:'Review & Summary' }
+    ]
+  },
+  {
+    id: 5, title: 'Qlik Predict Foundations',
+    color: '#e65c00', lessons: [
+      { id:'5.1', title:'Introduction to Qlik AutoML' },
+      { id:'5.2', title:'Machine Learning Foundations & EDA' },
+      { id:'5.3', title:'Model Scoring & Prediction Influencers' },
+      { id:'5.4', title:'Review & Resources' }
+    ]
+  }
+];
+
+const LESSON_CONTENT = {
+'1.1': `<h2>AI Literacy — Definitions &amp; Concepts</h2>
+<div class="module-label">Module 1 · Introduction to AI for Business</div>
+<h3>What is Artificial Intelligence?</h3>
+<p>There is no single unified definition of AI, but all reputable definitions agree on two critical areas: they mention a <strong>computer or machine</strong>, and they describe the ability to <strong>replicate or complete human-type actions</strong>.</p>
+<dl class="definition"><dt>National Intelligence Act</dt><dd>A machine-based system that can, for a given set of human-defined objectives, make predictions, recommendations, or decisions influencing real or virtual environments.</dd></dl>
+<dl class="definition"><dt>McKinsey &amp; Company</dt><dd>AI is the development, deployment, and maintenance of computational systems that can replicate certain types of human intelligence.</dd></dl>
+<dl class="definition"><dt>Dictionary.com</dt><dd>The theory and development of computer systems able to perform tasks that normally require human intelligence, such as visual perception, speech recognition, decision-making, and translation between languages.</dd></dl>
+<h3>How Humans Communicate with AI</h3>
+<div class="comparison-grid">
+<div class="comparison-card"><h4>Natural Language Processing (NLP)</h4><ul><li>Uses machine learning to enable computers to understand human language</li><li>Relies on algorithms to translate human language into computer-understandable form</li></ul></div>
+<div class="comparison-card"><h4>Large Language Models (LLMs)</h4><ul><li>An evolved form of NLP</li><li>Learns from large amounts of data to predict the likely next word or sequence</li><li>Generates human-like text</li></ul></div>
+</div>
+<h3>Two Main AI Classifications</h3>
+<div class="comparison-grid">
+<div class="comparison-card"><h4>Traditional AI</h4><ul><li>Focuses on analyzing data and solving problems</li><li>Uses algorithms and statistical models</li><li>Interprets, predicts, and derives insights from structured and unstructured data</li><li>Use cases: pattern recognition, predictive modeling, anomaly detection</li></ul></div>
+<div class="comparison-card"><h4>Generative AI</h4><ul><li>Can generate new content (text, images, music, code)</li><li>Resembles human-generated content</li><li>Learns from vast sets of existing data</li><li>Use cases: content creation, language translation</li></ul></div>
+</div>
+<div class="info-box"><strong>Key fact:</strong> The two most important criteria for any AI definition are (1) it involves a computer/machine and (2) it replicates human-type actions.</div>`,
+
+'1.2': `<h2>Business Use Cases for AI</h2>
+<div class="module-label">Module 1 · Introduction to AI for Business</div>
+<h3>Traditional AI Value</h3>
+<p>Organizations are realizing tremendous gains by leveraging traditional AI to predict potential outcomes or prescribe solutions. According to McKinsey, at least <strong>$11 trillion USD</strong> can be realized annually through global adoption of traditional AI.</p>
+<h3>Generative AI Value</h3>
+<p>GenAI value comes primarily from increasing employee productivity by automating manual tasks. According to McKinsey, as much as <strong>$4.6 trillion USD</strong> can be realized annually through global adoption of GenAI.</p>
+<h3>GenAI Use Cases by Business Area</h3>
+<ul>
+<li><strong>Content Creation:</strong> Automatically generates blogs, social media posts aligned with brand voice. Decreases creation times, ensures consistent brand voice, increases content output.</li>
+<li><strong>Product Development:</strong> Generates computer code, translates programming language. Decreases manual coding times, minimizes errors, faster time to market.</li>
+<li><strong>Human Resources:</strong> Creates job requisitions, posting templates, automates posting across career solutions. Attracts desirable candidates faster.</li>
+<li><strong>Summarization:</strong> Creates briefs from large volumes of text, video, audio across databases, e-mails, PDFs, and websites — not just structured data.</li>
+</ul>
+<h3>Common Challenges with AI Implementation</h3>
+<div class="warning-box">Approximately <strong>40%</strong> of AI projects get stuck or scrapped, and <strong>80%</strong> of AI projects fail. Successful ones can see ROI of <strong>370%</strong> (IDC 2024).</div>
+<ul>
+<li><strong>Skills gap:</strong> Lack of individuals with skills in developing and maintaining AI</li>
+<li><strong>Data readiness:</strong> AI requires large volumes of training data. Six guiding principles for AI-ready data: <em>Diverse, Timely, Accurate, Secure, Discoverable, LLM-Ready</em></li>
+<li><strong>Data governance:</strong> Additional emphasis on policies to safeguard data, protect sensitive information, and comply with government regulations</li>
+</ul>
+<div class="info-box"><strong>Remember:</strong> The 6 principles for AI-ready data are: Diverse · Timely · Accurate · Secure · Discoverable · LLM-Ready</div>`,
+
+'1.3': `<h2>AI Timeline &amp; Everyday AI</h2>
+<div class="module-label">Module 1 · Introduction to AI for Business</div>
+<h3>Timeline of AI Milestones</h3>
+<ul>
+<li><strong>2500 years ago:</strong> Greek mythology references Talos, a bronze automation designed to protect Crete — one of the earliest mentions of AI</li>
+<li><strong>1950s–1960s:</strong> The Perceptron and early neural networks</li>
+<li><strong>1956:</strong> The Dartmouth Conference — considered the formal beginning of AI research</li>
+<li><strong>1970s–1980s:</strong> The AI Winter — period of reduced funding and interest</li>
+<li><strong>1980s–1990s:</strong> The AI Renaissance — expert systems, renewed interest</li>
+<li><strong>1990s–2000s:</strong> Neural Network Revival</li>
+<li><strong>2000s:</strong> AI Winter to AI Spring — machine learning gains traction</li>
+<li><strong>2010s:</strong> The Deep Learning Revolution — GPUs + big data transform AI</li>
+<li><strong>Late 2010s:</strong> Rise of Transformer Models (2017 Google Brain breakthrough)</li>
+<li><strong>2020s:</strong> Generative AI Emerges — ChatGPT, DALL-E, Midjourney</li>
+</ul>
+<h3>AI in the Everyday World</h3>
+<div class="comparison-grid">
+<div class="comparison-card"><h4>Search Engines</h4><p>Google, Bing, and DuckDuckGo use AI to provide personalized, relevant results.</p></div>
+<div class="comparison-card"><h4>SPAM Filtering</h4><p>AI automatically filters unsolicited emails to your junk folder based on patterns.</p></div>
+<div class="comparison-card"><h4>Voice Assistants</h4><p>Apple's Siri, Amazon Alexa, and Google Assistant — AI scheduling and reminders.</p></div>
+<div class="comparison-card"><h4>Self-driving Cars</h4><p>Use AI to navigate roads, recognize objects, and make real-time driving decisions.</p></div>
+</div>`,
+
+'1.4': `<h2>Limitations &amp; Concerns Around AI</h2>
+<div class="module-label">Module 1 · Introduction to AI for Business</div>
+<h3>Key AI Limitations</h3>
+<dl class="definition"><dt>Hallucinations</dt><dd>Incorrect or inaccurate AI outputs presented as fact. Causes: limitations in training data, biased data, misunderstanding the task, incorrect data pattern assumptions.</dd></dl>
+<dl class="definition"><dt>Calculation Errors</dt><dd>AI struggles because it is a predictive model, not a logic model. It predicts next sequences based on patterns, not actual mathematical computation.</dd></dl>
+<dl class="definition"><dt>Comprehension Issues</dt><dd>AI lacks common sense. It predicts outcomes based on recognizing patterns, not true understanding. Context must be explicit.</dd></dl>
+<h3>Real-World Example: Paris Temperature</h3>
+<p>When asked about "Paris" weather, an AI companion predicted Paris, France instead of Paris, Texas — because the AI used data patterns to predict the most likely location. Providing more explicit context (Paris, Texas, USA) resolves the ambiguity.</p>
+<h3>Example: Calculation Error</h3>
+<p>When asked about Apple's gross profit margin, an AI might compute $95B - $25B = $63B (instead of $70B). LLMs predict based on patterns, not perform actual arithmetic — they are predictive models, not logic models.</p>
+<h3>Techniques to Identify &amp; Limit AI Concerns</h3>
+<ul>
+<li><strong>Critically evaluate AI outputs:</strong> Challenge the output, look for validation and disproving instances</li>
+<li><strong>Seek additional sources:</strong> Do not rely solely on AI — consult other verifiable and reputable resources</li>
+<li><strong>Seek diverse resources:</strong> Look at answers from mixed and variable sources across different focus areas</li>
+</ul>
+<div class="warning-box"><strong>Important:</strong> AI is a predictive model, not a logic model. This is why it struggles with calculations — it predicts the next sequence rather than computing actual results.</div>`,
+
+'1.5': `<h2>Review &amp; Key Takeaways</h2>
+<div class="module-label">Module 1 · Introduction to AI for Business</div>
+<h3>Module 1 Objectives Achieved</h3>
+<ul>
+<li>Understand common AI terms and definitions</li>
+<li>Identify business processes that can be reimagined and benefit from AI</li>
+<li>Recognize limitations and areas of concern when interacting with AI</li>
+</ul>
+<h3>Key Numbers to Remember</h3>
+<div class="info-box">
+<ul>
+<li><strong>$11 trillion</strong> — Annual value from traditional AI (McKinsey)</li>
+<li><strong>$4.6 trillion</strong> — Annual value from GenAI (McKinsey)</li>
+<li><strong>40%</strong> of AI projects get stuck or scrapped</li>
+<li><strong>80%</strong> of AI projects fail</li>
+<li><strong>370%</strong> ROI for successful AI implementations (IDC 2024)</li>
+<li><strong>6 principles</strong> for AI-ready data: Diverse, Timely, Accurate, Secure, Discoverable, LLM-Ready</li>
+</ul>
+</div>
+<h3>Quick Recall: AI vs GenAI</h3>
+<div class="comparison-grid">
+<div class="comparison-card"><h4>Traditional AI</h4><ul><li>Analyzes data, makes predictions</li><li>Classification, regression, anomaly detection</li><li>$11T annual potential</li></ul></div>
+<div class="comparison-card"><h4>Generative AI</h4><ul><li>Creates new content</li><li>Text, images, code, music</li><li>$4.6T annual potential</li></ul></div>
+</div>`,
+
+'2.1': `<h2>A Brief History of Artificial Intelligence</h2>
+<div class="module-label">Module 2 · Understanding GenAI</div>
+<h3>Key Historical Milestones</h3>
+<ul>
+<li><strong>1956 — Dartmouth Conference:</strong> Considered the formal beginning of AI as an academic discipline. The term "Artificial Intelligence" was coined here.</li>
+<li><strong>1950s–60s — The Perceptron:</strong> Early neural network research begins</li>
+<li><strong>1970s–80s — The AI Winter:</strong> Reduced funding and interest due to overpromising</li>
+<li><strong>1980s–90s — AI Renaissance:</strong> Expert systems gain traction in industry</li>
+<li><strong>1990s–2000s — Neural Network Revival:</strong> Backpropagation algorithm revives neural networks</li>
+<li><strong>2000s — AI Spring:</strong> Machine learning algorithms and increasing data availability</li>
+<li><strong>2010s — Deep Learning Revolution:</strong> GPUs + massive datasets enable breakthrough performance</li>
+<li><strong>Late 2010s — Transformer Models:</strong> 2017 Google Brain paper "Attention Is All You Need"</li>
+<li><strong>2020s — Generative AI Emerges:</strong> ChatGPT, DALL-E, widespread commercial adoption</li>
+</ul>
+<div class="info-box"><strong>Exam tip:</strong> 1956 and the Dartmouth Conference = beginning of AI research. The transformer architecture = 2017 Google Brain.</div>
+<h3>Qlik's AI History</h3>
+<p>The original Qlik Associative Engine was designed by former neuroscientist Staffan Gestrelius, co-inventor and former CEO of Qlik. Inspired by the associative memory powers of the human brain, the engine allowed users to uncover relationships between data points, much like how the human brain learns and remembers connections.</p>
+<p>A landmark in AI associative memory came in 1982 with Hopfield Networks — a type of Recurrent Neural Network serving as an associative memory system. Modern LLMs use vector databases as external associative memory, paralleling this approach.</p>`,
+
+'2.2': `<h2>AI Tribes &amp; Approaches</h2>
+<div class="module-label">Module 2 · Understanding GenAI</div>
+<h3>The Two Main Branches of AI</h3>
+<div class="comparison-grid">
+<div class="comparison-card"><h4>Knowledge-based Systems</h4><ul><li>Symbolic AI (Classical AI)</li><li>Fuzzy Logic</li><li>Embodied AI</li></ul></div>
+<div class="comparison-card"><h4>Machine Learning (ML)</h4><ul><li>Connectionist AI (Neural Networks / Deep Learning)</li><li>Bayesian ML</li><li>Analogical Reasoning</li><li>Reinforcement Learning</li><li>Evolutionary Computation</li><li>Hybrid AI</li></ul></div>
+</div>
+<h3>Key AI Tribes</h3>
+<dl class="definition"><dt>Symbolic AI (Classical AI)</dt><dd><strong>Strengths:</strong> Complex reasoning, domain-specific knowledge encoding (expert systems). <strong>Weaknesses:</strong> Requires explicit programmer-supplied rules, brittle, struggles with uncertainty outside ruleset.</dd></dl>
+<dl class="definition"><dt>Connectionist AI (Neural Networks / Deep Learning)</dt><dd><strong>Strengths:</strong> Learns from data, pattern recognition, handles complexity. <strong>Weaknesses:</strong> Data-inefficient (requires large datasets), black box decisions, poor generalization outside training distribution.</dd></dl>
+<dl class="definition"><dt>Reinforcement Learning</dt><dd>Learns through interaction with an environment, receiving rewards or punishments. Examples: Q-learning, policy gradients. Used in robotics, game-playing (AlphaGo).</dd></dl>
+<dl class="definition"><dt>Hybrid AI</dt><dd>Combines multiple techniques (e.g., neuro-symbolic AI). AlphaGo uses Deep Learning + Reinforcement Learning + Symbolic AI. Addresses weaknesses of individual approaches.</dd></dl>
+<h3>AutoML vs GenAI — Naming Convention</h3>
+<ul>
+<li><strong>AutoML:</strong> Automates ML pipeline (preprocessing, model selection, hyperparameter tuning). Uses AI techniques but focuses on automating the ML workflow.</li>
+<li><strong>GenAI:</strong> Generates new content (text, images, music). Uses deep learning transformers. Called "AI" because outputs exhibit perceived intelligence and require minimal human intervention.</li>
+</ul>
+<div class="info-box"><strong>Key distinction:</strong> AutoML emphasizes <em>automation of the ML process</em>; GenAI emphasizes <em>generative capabilities</em>. Both are based on machine learning.</div>`,
+
+'2.3': `<h2>GenAI, LLMs &amp; Foundation Models</h2>
+<div class="module-label">Module 2 · Understanding GenAI</div>
+<h3>Understanding the Relationships</h3>
+<div class="info-box"><strong>Hierarchy:</strong> Foundation Model &gt; LLM &gt; GPT &gt; ChatGPT<br>LLMs are a type of Foundation Model. GPT is a specific LLM family. ChatGPT is a user interface built on GPT models.</div>
+<dl class="definition"><dt>Large Language Models (LLMs)</dt><dd>Advanced AI systems trained on enormous datasets (petabytes). Training data: books, articles, websites, and other text. Use deep learning to understand and generate human-like text. Power: content creation, translation, chatbots, financial analysis, search.</dd></dl>
+<dl class="definition"><dt>Foundation Models</dt><dd>ML models trained on vast amounts of data (text, images, video, etc.) that learn general representations for all types of tasks — question answering, content generation, translation, image recognition. LLMs are a type of Foundation Model.</dd></dl>
+<h3>The Transformer Revolution (2017)</h3>
+<p>A key breakthrough came in 2017 when the Google Brain team introduced the <strong>transformer architecture</strong>. It replaced traditional recurrent and convolutional structures with an attention-based architecture primarily designed for sequential data.</p>
+<p>GPT stands for <strong>Generative Pre-trained Transformer</strong> — a play on General Purpose Technologies. Historical GPTs include: steam engine, electricity, and the computer.</p>
+<h3>GPUs — Accelerating AI</h3>
+<p>Graphics Processing Units (GPUs), initially developed for graphics rendering, proved ideal for ML due to their ability to process multiple threads simultaneously. Transformers use GPUs to process multiple threads of information, enabling faster training on text, images, audio, and video.</p>
+<h3>Enterprise Data for GenAI</h3>
+<ul>
+<li><strong>80–90%</strong> of enterprise data is unstructured (MIT 2021 report)</li>
+<li><strong>First-party data:</strong> Internal data from everyday business interactions</li>
+<li><strong>Second-party data:</strong> From trusted partners (e.g., product inventory with e-commerce partners)</li>
+<li><strong>Third-party data:</strong> From external sources (supply chain, financial market data)</li>
+</ul>`,
+
+'2.4': `<h2>Large Language Models Deep Dive</h2>
+<div class="module-label">Module 2 · Understanding GenAI</div>
+<h3>Types of LLMs</h3>
+<dl class="definition"><dt>General-purpose LLMs</dt><dd>Handle many tasks, understand many languages. Trained on massive internet data. Examples: GPT-3 (175B parameters), GPT-4.</dd></dl>
+<dl class="definition"><dt>Task-specific LLMs</dt><dd>Specialize in targeted tasks. Example: Code Llama for software code generation.</dd></dl>
+<dl class="definition"><dt>Domain-specific LLMs</dt><dd>Apply GenAI to specific industries. Examples: BioBERT (biomedical text), CodeBERT (cybersecurity). Can be further fine-tuned on company-specific data.</dd></dl>
+<dl class="definition"><dt>Multimodal LLMs</dt><dd>Handle images and other media along with text (vs. traditional LLMs that focus only on text).</dd></dl>
+<h3>Key LLM Models</h3>
+<ul>
+<li><strong>OpenAI GPT family:</strong> GPT-1 through GPT-4. GPT-2 (1.5B params) for narrow tasks; GPT-3 (175B params) for complex tasks.</li>
+<li><strong>BERT (Google):</strong> Bidirectional transformer encoder. Uses masked language modeling. Best for NLU tasks (classification, QA, NER).</li>
+<li><strong>Llama (Meta):</strong> Excels at translation, text generation, QA.</li>
+<li><strong>XLNet (Carnegie Mellon + Google):</strong> Generates high-quality multilingual text.</li>
+</ul>
+<h3>Key Terminology</h3>
+<dl class="definition"><dt>Prompt</dt><dd>The text input provided to a language model that guides its output generation.</dd></dl>
+<dl class="definition"><dt>Completion</dt><dd>The result produced by the model based on the prompt. The process = inference.</dd></dl>
+<dl class="definition"><dt>Vector Embeddings</dt><dd>Words mapped to token IDs and transformed into mathematical vectors in multi-dimensional space. Enable semantic similarity search rather than exact matches.</dd></dl>
+<dl class="definition"><dt>Vector Database</dt><dd>Stores data as mathematical representations. Enables fast retrieval based on similarity metrics. Critical for RAG, recommendations, and search.</dd></dl>
+<h3>Developer Frameworks</h3>
+<ul>
+<li><strong>Hugging Face Transformer Library:</strong> Open-source, high-level API for BERT, GPT and other models</li>
+<li><strong>OpenAI GPT Playground:</strong> Interactive fine-tuning and experimentation</li>
+<li><strong>LangChain:</strong> Orchestration library for chaining prompts, connecting data sources, scaling to multiple LLMs</li>
+</ul>`,
+
+'2.5': `<h2>LLM Application Project Lifecycle</h2>
+<div class="module-label">Module 2 · Understanding GenAI</div>
+<h3>Step 1: Define the Use Case</h3>
+<p>Identify the business problem: personalized product descriptions, document summarization, code generation, customer support chatbot, etc.</p>
+<h3>Selecting the Right LLM</h3>
+<div class="comparison-grid">
+<div class="comparison-card"><h4>Hosted LLMs</h4><ul><li>ChatGPT, Gemini — accessible via UI or APIs</li><li>No infrastructure overhead</li><li>Less control over data</li></ul></div>
+<div class="comparison-card"><h4>Open-source LLMs</h4><ul><li>Llama — free to download and modify</li><li>Deploy in your own environment</li><li>More control but more infrastructure responsibility</li></ul></div>
+</div>
+<h3>Model Customization Techniques</h3>
+<dl class="definition"><dt>Prompt Engineering</dt><dd>Crafting inputs to shape LLM output. Techniques: <strong>Zero-shot</strong> (no examples), <strong>One-shot</strong> (one example), <strong>Few-shot</strong> (multiple examples). Goal: guide the model toward desired output without retraining.</dd></dl>
+<dl class="definition"><dt>In-Context Learning (ICL)</dt><dd>Providing additional context during inference (without retraining). The model dynamically updates its understanding. Used with private/proprietary documents to improve domain-specific responses.</dd></dl>
+<dl class="definition"><dt>Retrieval-Augmented Generation (RAG)</dt><dd>Combines retrieval and generation. Retrieves relevant information from a vector database, passes to LLM with a prompt, LLM generates an answer from input data. Addresses: limited knowledge of obscure subjects, stale data, lack of proprietary insight.</dd></dl>
+<dl class="definition"><dt>Fine-tuning</dt><dd>Updates parameters of a pretrained model on domain-specific data. 4 steps: (1) Select pretrained LLM, (2) Identify quality datasets, (3) Train with prompts and expected answers, (4) Evaluate and adjust hyperparameters.</dd></dl>
+<dl class="definition"><dt>RLHF (Reinforcement Learning from Human Feedback)</dt><dd>Ongoing fine-tuning with human evaluator feedback. Human raters score responses → model updates parameters. Reduces harmful content, improves conversational quality.</dd></dl>
+<h3>Using a Vector Database</h3>
+<p>Each word is mapped to a token ID and transformed into a vector. Vector databases enable efficient storage, retrieval, and manipulation. Key feature: identifies related text based on similarity metrics (semantic distance), not exact matches. Critical for RAG applications.</p>`,
+
+'2.6': `<h2>Bringing LLMs to Production</h2>
+<div class="module-label">Module 2 · Understanding GenAI</div>
+<h3>LLM Data Pipelines</h3>
+<p>Beyond traditional data pipelines (clean, curate, govern), LLM pipelines require:</p>
+<dl class="definition"><dt>Semantic Caching</dt><dd>Precomputes and stores semantic representations (embeddings) of possible queries. When a user interacts, retrieves precomputed representation instead of processing from scratch. Reduces computational overhead, speeds up response generation. Ideal for chatbots and recommendation systems requiring real-time responses.</dd></dl>
+<dl class="definition"><dt>Feature Injection</dt><dd>Incorporating additional information into the AI model at inference time. Improves the model's ability to handle specific tasks and capture important data patterns.</dd></dl>
+<dl class="definition"><dt>Context Retrieval</dt><dd>Retrieving relevant contextual information (previous interactions, user history). RAG is a type of in-context learning (ICL) for context retrieval.</dd></dl>
+<h3>Processing for Inference</h3>
+<p>Three primary considerations for running LLMs in production:</p>
+<ul>
+<li><strong>Infrastructure:</strong> GPUs ideal for parallel computations. Size depends on model size, memory requirements, and latency constraints.</li>
+<li><strong>Access:</strong> Hosted on private servers or cloud platforms. Cloud = scalability + easy deployment but raises security/governance concerns.</li>
+<li><strong>Consumption:</strong> Access via APIs or application-specific interfaces.</li>
+</ul>
+<h3>Reducing Latency</h3>
+<p>Latency = the time it takes the LLM to make predictions after receiving input. Strategies: use smaller models, optimize for inference, use efficient hardware, keep processing close to the data.</p>
+<h3>LLMOps &amp; Orchestration</h3>
+<dl class="definition"><dt>LLMOps</dt><dd>LLM Operations — emerging set of tools, techniques, and frameworks for building AI-powered applications.</dd></dl>
+<dl class="definition"><dt>Orchestration Frameworks</dt><dd>Coordinate AI agents and other components to accomplish specific goals. Example: LangChain. Capabilities: chain prompts, connect to data sources, scale to multiple LLMs.</dd></dl>
+<dl class="definition"><dt>AI Agents</dt><dd>Individual instances of language models performing specific tasks (summarization, translation, sentiment analysis) within an orchestration system.</dd></dl>
+<h3>RAG in Production</h3>
+<p>Text sources often exceed the context window (typically a few thousand tokens). External data sources are divided into <strong>chunks</strong> (split), each fitting in the context window. LangChain handles this chunking automatically. RAG connects LLMs to external data, addressing the limitation of stale training data.</p>`,
+
+'2.7': `<h2>Security &amp; Ethical Considerations</h2>
+<div class="module-label">Module 2 · Understanding GenAI</div>
+<h3>Data Privacy Concerns</h3>
+<ul>
+<li><strong>Unintentional disclosure:</strong> GenAI apps may generate outputs containing sensitive customer information even when prompts don't mention it</li>
+<li><strong>Misuse of generated data:</strong> Synthetic data indistinguishable from real data could be used for identity theft, fraud, or deep fakes</li>
+<li><strong>Compliance violations:</strong> GDPR and CCPA impose strict requirements on data collection, use, and storage — including data used in training GenAI models</li>
+</ul>
+<h3>Mitigating Risks</h3>
+<ul>
+<li>Choose vendors with proven track record and third-party certifications</li>
+<li>Review terms of service and privacy policies carefully</li>
+<li>Appoint data stewards responsible for data governance</li>
+</ul>
+<h3>The Three Hs of Responsible AI</h3>
+<div class="info-box">
+<strong>Helpfulness · Honesty · Harmlessness</strong><br>
+These are the three principles AI enthusiasts commonly cite when discussing responsible AI deployment.
+</div>
+<h3>AI Bias</h3>
+<p>LLMs reflect and reinforce societal biases present in training data. If historical data contains biases (race, gender), the LLM may perpetuate them. Three ethical principles:</p>
+<ul>
+<li><strong>Bias mitigation:</strong> Actively work to minimize biased results, ensure inclusive and representative models</li>
+<li><strong>Responsible use:</strong> Establish guidelines and guardrails to prevent misuse, misinformation, hate speech</li>
+<li><strong>Societal impact:</strong> Understand broader consequences for various stakeholders</li>
+</ul>
+<h3>Open-Source Risks</h3>
+<p>LLMs like Llama 2, BERT, and Falcon offer capabilities at little cost but carry risks: training data often not publicly accessible, tools may be vulnerable if not regularly updated and patched.</p>
+<h3>Copyright Concerns</h3>
+<p>In September 2023, 17 authors (including George R.R. Martin, John Grisham) filed a class action suit against OpenAI alleging "flagrant and harmful" copyright infringement through using copyrighted works to train AI. Enterprises must be aware of the legal implications of content used in GenAI projects.</p>
+<h3>Hallucinations — Mitigation Strategies</h3>
+<ul>
+<li>Fine-tuning with reliable and accurate data</li>
+<li>Incorporating human review and oversight</li>
+<li>Continuously monitoring and refining GenAI systems</li>
+</ul>`,
+
+'3.1': `<h2>What is Qlik Answers?</h2>
+<div class="module-label">Module 3 · Qlik Answers</div>
+<h3>Overview</h3>
+<p>Qlik Answers is a <strong>plug-and-play, generative AI-powered knowledge assistant</strong> that provides business users with personalized, contextually relevant answers to questions sourced from unstructured content such as knowledge libraries, document repositories, and online content.</p>
+<div class="info-box"><strong>Unlike traditional search,</strong> Qlik Answers delivers personalized answers to questions — not just lists of content. Answers are reliable, consistent, and include full explainability with links to source documents.</div>
+<h3>Core Capabilities</h3>
+<ul>
+<li><strong>Trusted Data Connections:</strong> Built-in connectors with Amazon S3, Azure, Dropbox, Google Drive, SharePoint</li>
+<li><strong>Fully Managed Knowledge Base:</strong> Content indexed where it resides — no need to move it. Create in Qlik Cloud, link to assistant.</li>
+<li><strong>Embeddable Assistant:</strong> Access within Qlik Cloud or embed via API connectors into CRM, service desk, intranet</li>
+<li><strong>Explainable Answers:</strong> Generative answers with direct links to source content and citations</li>
+<li><strong>Built-in Review Process:</strong> Collect user feedback at point of answer; admins can improve quality</li>
+</ul>
+<h3>How It Works — 4 Steps</h3>
+<ol>
+<li><strong>Build a knowledge base:</strong> Collect unstructured content (PPT, Word, Text, PDF, HTML). Upload directly or connect via SharePoint, Amazon S3, Azure Storage, Dropbox, Google Cloud.</li>
+<li><strong>Create an assistant:</strong> Add up to 5 knowledge bases per assistant. Add conversation starters. </li>
+<li><strong>Ask a question:</strong> Natural language interaction like ChatGPT. Maintains contextual understanding for follow-up questions.</li>
+<li><strong>Get an answer:</strong> Lightning-fast generative answers from source documentation, with linked source files and built-in feedback loop.</li>
+</ol>
+<h3>Business Use Cases</h3>
+<ul>
+<li><strong>Customer Support:</strong> Precise solutions from technical documentation, user manuals, troubleshooting guides</li>
+<li><strong>Sales Enablement:</strong> Product documentation library for sales reps, cross-selling insights</li>
+<li><strong>Marketing:</strong> Email/blog creation from industry trends, company news, product information</li>
+<li><strong>Policy Clarification:</strong> Plain-language explanations of complex policies and procedures</li>
+<li><strong>Field Maintenance:</strong> Equipment-specific details on demand, reducing repair times</li>
+</ul>
+<div class="info-box"><strong>Key differentiator:</strong> Qlik Answers is complete out-of-the-box, plug-and-play, self-service. Answers are reliable, repeatable, and explainable.</div>`,
+
+'3.2': `<h2>RAG Architecture &amp; Knowledge Bases</h2>
+<div class="module-label">Module 3 · Qlik Answers</div>
+<h3>Understanding RAG</h3>
+<p><strong>RAG = Retrieval-Augmented Generation</strong> — a framework combining retrieval techniques with generative models used in NLP to enhance LLM performance by incorporating external knowledge.</p>
+<ul>
+<li><strong>R (Retrieval):</strong> Semantic search against a knowledge base (vector store) to find relevant chunks</li>
+<li><strong>A (Augmented):</strong> Retrieved context is added to the prompt provided to the LLM</li>
+<li><strong>G (Generation):</strong> LLM generates a natural language answer using the retrieved context</li>
+</ul>
+<h3>How Qlik Answers Uses RAG</h3>
+<p>When a user asks a question:</p>
+<ol>
+<li>The assistant performs a <strong>semantic search</strong> against the knowledge base</li>
+<li>The system finds the <strong>top 10 most relevant text chunks</strong></li>
+<li>RAG passes those chunks to the LLM</li>
+<li>The LLM generates an answer with <strong>references back to relevant documents</strong></li>
+</ol>
+<h3>Knowledge Base Architecture</h3>
+<p>A knowledge base stores documents in <strong>text chunk format</strong>. The relevant text chunks are called when users ask questions.</p>
+<ul>
+<li>Documents are split into chunks that fit the context window</li>
+<li>Chunks are converted to vector embeddings</li>
+<li>OpenSearch stores the embeddings for semantic retrieval</li>
+<li>Cohere Rerank (on Amazon SageMaker) ranks the most relevant embeddings</li>
+</ul>
+<h3>Hallucination Mitigation in Qlik Answers</h3>
+<ul>
+<li>Detects contextual relevance in provided content</li>
+<li>Users can view source content to verify responses</li>
+<li>Fine-tuning with reliable and accurate data</li>
+</ul>
+<h3>Limitations of Qlik Answers (Use Case Limitations)</h3>
+<div class="warning-box">
+<strong>Not supported:</strong>
+<ul>
+<li><strong>Summarization:</strong> The system searches top 10 relevant chunks only — cannot consider the entire knowledge base for a summary</li>
+<li><strong>Calculations:</strong> Similar limitation — only relevant chunks are retrieved, not all numerical data</li>
+</ul>
+<strong>Key insight:</strong> Qlik Answers is designed as a "needle in a haystack" tool, not for aggregate analysis.
+</div>`,
+
+'3.3': `<h2>Setting Up Qlik Answers</h2>
+<div class="module-label">Module 3 · Qlik Answers</div>
+<h3>Qlik Answers Workflow</h3>
+<ol>
+<li><strong>Add knowledge bases</strong> — Create knowledge bases and add knowledge sources</li>
+<li><strong>Set up data sources</strong> — Upload or connect via data connections (Amazon S3, Azure, Google Drive, etc.)</li>
+<li><strong>Index sources</strong> — Sources are indexed automatically after adding</li>
+<li><strong>Create assistant</strong> — Add knowledge bases to the assistant, configure conversation starters</li>
+<li><strong>Share or embed</strong> — Use within Qlik Cloud or embed in other applications</li>
+</ol>
+<h3>Knowledge Base File Support</h3>
+<p><strong>Supported file types:</strong> DOC, DOCX, HTM, HTML, PDF, PPT, PPTX, TXT, and more.</p>
+<p><strong>Supported connections:</strong> Amazon S3, Amazon S3 V2, Azure Storage, Dropbox, Google Cloud Storage, Google Drive, Office 365 SharePoint, OneDrive.</p>
+<h3>Setting Up an Assistant</h3>
+<ul>
+<li>Assistants offer an interface for natural language questions</li>
+<li>Can be for personal use or shared with other users</li>
+<li>Can be consumed inside or outside Qlik Cloud</li>
+<li>Maximum <strong>5 knowledge bases</strong> per assistant</li>
+<li>Add conversation starters to guide users on question types</li>
+<li>Follow-up questions maintain contextual understanding</li>
+<li>Powered by Amazon Bedrock LLMs in a secure environment</li>
+</ul>
+<div class="info-box"><strong>Note:</strong> After adding data sources to the knowledge base, they must be <strong>indexed</strong> before the assistant can use them.</div>
+<h3>Best Practices for Setup</h3>
+<ul>
+<li>Create targeted, specific assistants for particular purposes</li>
+<li>Do not overlap knowledge bases across assistants covering the same topics</li>
+<li>Add conversation starters describing both the types of questions and how to ask them</li>
+<li>Keep knowledge bases focused — too many unrelated sources reduce answer quality</li>
+</ul>`,
+
+'3.4': `<h2>Deploying &amp; Administrating Qlik Answers</h2>
+<div class="module-label">Module 3 · Qlik Answers</div>
+<h3>Subscription &amp; Deployment</h3>
+<p>Qlik Answers is an <strong>add-on subscription to Qlik Cloud</strong> — no additional deployment required. Administration occurs in two places:</p>
+<ul>
+<li><strong>Administration activity center:</strong> Monitor capacity, manage user access permissions</li>
+<li><strong>Catalog in Qlik Cloud:</strong> Manage assistants and knowledge bases</li>
+</ul>
+<h3>Access &amp; Permission Model</h3>
+<p>Access is controlled at two levels:</p>
+<ul>
+<li><strong>User role permissions</strong> (Administration activity center) — controls access to assistants and knowledge bases broadly</li>
+<li><strong>Space role permissions</strong> — controls access to specific assistants, knowledge bases, and data sources within spaces</li>
+</ul>
+<p><strong>Minimum access for a consumer:</strong> View assistants + Search knowledge bases: Allowed</p>
+<p><strong>To review conversations:</strong> Requires the <strong>audit admin user role</strong></p>
+<h3>Capacity Monitoring</h3>
+<dl class="definition"><dt>Assistant questions asked (monthly)</dt><dd>Quota per month, resets every month. Questions do not carry over. When limit is hit, users cannot ask more questions until next month.</dd></dl>
+<dl class="definition"><dt>Total knowledge base pages indexed</dt><dd>Capacity does not expire or reset. 1 page = 2,000 characters of text data. Images and non-text content are NOT counted.</dd></dl>
+<h3>Technical Guardrails</h3>
+<ul>
+<li>Query rate limit for knowledge base: <strong>50 per minute/subscription</strong></li>
+<li>Question rate limit: <strong>20 per minute/subscription</strong></li>
+<li>Concurrent document ingestion per data source: <strong>10 source files</strong></li>
+<li>SLA for document ingestion: <strong>1 hour</strong></li>
+<li>Minimum time between scheduled sync: <strong>3600 seconds</strong></li>
+</ul>
+<h3>Assistant Guardrails</h3>
+<ul>
+<li><strong>LLM monitoring:</strong> Scans and rejects questions containing invisible text or prompt injections</li>
+<li><strong>PII sanitization:</strong> Detects and removes PII data and secrets before sending to LLM; re-adds when providing responses</li>
+<li><strong>Hallucination mitigation:</strong> Detects contextual relevance, provides source links for verification</li>
+</ul>
+<h3>Supported Regions</h3>
+<ul>
+<li>US East (North Virginia) — us.qlikcloud.com</li>
+<li>Europe (Ireland) — eu.qlikcloud.com</li>
+<li>Europe (Frankfurt) — de.qlikcloud.com</li>
+<li>Asia-Pacific (Sydney) — ap.qlikcloud.com</li>
+</ul>`,
+
+'3.5': `<h2>System Architecture &amp; Third-Party Technologies</h2>
+<div class="module-label">Module 3 · Qlik Answers</div>
+<h3>System Architecture — Two Aspects</h3>
+<div class="comparison-grid">
+<div class="comparison-card"><h4>Knowledge Base</h4><ul><li>Collection of documents stored in text chunk formats</li><li>Text chunks called when user asks a question</li><li>Documents indexed by semantic search engine (OpenSearch)</li><li>Embeddings ranked by Cohere Rerank</li></ul></div>
+<div class="comparison-card"><h4>Assistant</h4><ul><li>Frontend application for user questions</li><li>Performs semantic search against knowledge base</li><li>Passes relevant chunks to LLM via RAG</li><li>Returns answer with text chunks used + source links</li></ul></div>
+</div>
+<h3>Third-Party Technologies</h3>
+<dl class="definition"><dt>AWS Bedrock</dt><dd>Used as a service to connect to Claude (the LLM). Powers answer generation.</dd></dl>
+<dl class="definition"><dt>OpenSearch</dt><dd>The vector store that stores embeddings extracted from documents. Also serves as the semantic search engine to gather relevant text chunks during answer generation.</dd></dl>
+<dl class="definition"><dt>Cohere Rerank</dt><dd>Ranks the most relevant embeddings returned by OpenSearch. Hosted on Amazon SageMaker.</dd></dl>
+<dl class="definition"><dt>Temporal</dt><dd>Distributes workflows in the file ingestion workflow (knowledge base indexing).</dd></dl>
+<h3>Security &amp; Compliance</h3>
+<ul>
+<li>All customer data stays within the Qlik Cloud region of the user's tenant</li>
+<li>All traffic is encrypted end to end</li>
+<li><strong>Qlik does NOT use customer data to train LLMs</strong></li>
+<li>Audit logs available through platform UI or API integration</li>
+</ul>
+<h3>Governance Best Practices</h3>
+<ul>
+<li><strong>Curate:</strong> Curate data sources to be specific to the use case; minimize repetitive content</li>
+<li><strong>Review:</strong> Provide subject matter experts access to review answers; use feedback to improve data sources</li>
+<li><strong>Plan governance:</strong> Define who creates knowledge bases, who creates assistants, who can ask questions</li>
+<li>Qlik Answers does NOT select/prioritize by age — old and new documents are equally relevant; update sources when content changes</li>
+</ul>`,
+
+'3.6': `<h2>Integrating Qlik Answers</h2>
+<div class="module-label">Module 3 · Qlik Answers</div>
+<h3>Integration Options</h3>
+<ul>
+<li><strong>Qlik Cloud native:</strong> Access directly within Qlik Cloud analytics navigation</li>
+<li><strong>Qlik Embed (qlik-embed):</strong> Embed the chat interface in other web interfaces</li>
+<li><strong>Custom UI:</strong> Build using Qlik Answers APIs directly</li>
+</ul>
+<h3>Embedding with qlik-embed</h3>
+<p>To embed Qlik Answers into a web application:</p>
+<ol>
+<li>Create a local web application (e.g., Visual Studio Code + Live Server)</li>
+<li>Add the <code>qlik-embed</code> host configuration script to the HTML header</li>
+<li>Create an OAuth2 SPA client in the Qlik Cloud Management Console</li>
+<li>Configure scopes (e.g., <code>user_default</code>), redirect URLs, and allowed origins</li>
+<li>Add the <code>ai/assistant</code> web component with your assistant ID</li>
+<li>Apply CSS styling for layout</li>
+</ol>
+<h3>OAuth2 Configuration</h3>
+<ul>
+<li>Access Management Console → OAuth clients</li>
+<li>Create new Single-page App (SPA) client</li>
+<li>Select scopes (controls level of access to user account)</li>
+<li>Add redirect URLs and allowed origins</li>
+<li>Generate and copy the Client ID</li>
+</ul>
+<div class="info-box"><strong>Key parameters:</strong> data-host (tenant URL), data-client-id (OAuth client ID), data-redirect-uri (oauth_callback.html URL), data-access-token-storage, data-auto-redirect</div>
+<h3>Finding Your Assistant ID</h3>
+<p>Open your assistant in Qlik Cloud. The assistant ID is the UUID in the URL: <em>https://[tenant].qlikcloud.com/assistant/<strong>[assistant-id]</strong>/summary</em></p>`,
+
+'4.1': `<h2>Machine Learning Concepts &amp; AutoML</h2>
+<div class="module-label">Module 4 · Understanding Qlik Predict</div>
+<h3>What is Machine Learning?</h3>
+<p>Machine learning (ML) is:</p>
+<blockquote style="border-left:4px solid var(--green);padding:10px 16px;margin:14px 0;color:var(--text-muted);font-style:italic;">"The use and development of computer systems that are able to learn and adapt without following explicit instructions, by using algorithms and statistical models to analyze and draw inferences from patterns in data."</blockquote>
+<p>ML is a branch of AI and data science focused on <strong>recognizing patterns in historical data to predict future outcomes</strong>. Used across all industries: sales forecasting, churn reduction, customer acquisition, inventory optimization, spend analysis.</p>
+<h3>Four Categories of ML Problems</h3>
+<dl class="definition"><dt>Supervised Learning</dt><dd>Trained on labeled data (input + known output). Goal: predict output for new inputs. Types: <strong>Classification</strong> (predicting categories, e.g., spam detection) and <strong>Regression</strong> (predicting continuous values, e.g., house prices).</dd></dl>
+<dl class="definition"><dt>Unsupervised Learning</dt><dd>No labeled outputs. Identifies patterns and structures. Types: <strong>Clustering</strong> (grouping similar points, e.g., customer segmentation) and <strong>Dimensionality Reduction</strong> (e.g., PCA).</dd></dl>
+<dl class="definition"><dt>Semi-supervised Learning</dt><dd>Mix of labeled and unlabeled data (labeled portion often small). Useful when labeling is expensive.</dd></dl>
+<dl class="definition"><dt>Reinforcement Learning</dt><dd>Agent learns by interacting with environment, receiving rewards or penalties. Examples: robot walking, game-playing AI (AlphaGo).</dd></dl>
+<h3>AutoML — Automated Machine Learning</h3>
+<p>AutoML automates the time-consuming, iterative steps performed by data scientists:</p>
+<ul>
+<li>Data preprocessing and feature engineering</li>
+<li>Feature selection</li>
+<li>Model selection</li>
+<li>Hyperparameter tuning</li>
+<li>Model evaluation</li>
+</ul>
+<h3>Qlik AutoML — Predict, Explain, Act</h3>
+<ul>
+<li><strong>Predict:</strong> Generate accurate forecasts, transition from historical to forward-looking insights, address the "other 90%" of use cases</li>
+<li><strong>Explain:</strong> Full model explainability with links to underlying data, transparent AI decisions</li>
+<li><strong>Act:</strong> Fully integrated into Qlik Cloud, what-if analysis, alerting, automation, MLOps for retraining</li>
+</ul>
+<div class="info-box"><strong>Popular AutoML tools:</strong> Google AutoML, H2O.ai, Auto-sklearn, Microsoft Azure AutoML, Qlik AutoML</div>`,
+
+'4.2': `<h2>Identifying AutoML Use Cases</h2>
+<div class="module-label">Module 4 · Understanding Qlik Predict</div>
+<h3>When to Use AutoML</h3>
+<ol>
+<li><strong>Check for predictive problems:</strong> Classification (spam vs. not spam), regression (sales forecasting), pattern identification (customer segmentation)</li>
+<li><strong>Ensure sufficient data:</strong> AutoML works best with structured, tabular data (e.g., CSV). Labeled data needed for supervised learning.</li>
+<li><strong>Prioritize repetitive tasks:</strong> Multiple model iterations, hyperparameter tuning, data preprocessing</li>
+<li><strong>Look for business impact:</strong> Customer churn prediction, fraud detection, demand forecasting</li>
+<li><strong>Assess expertise and resources:</strong> Team lacks ML expertise OR time constraints prevent manual experimentation</li>
+</ol>
+<h3>ML-Ready Dataset Requirements</h3>
+<ul>
+<li><strong>Ask a specific question:</strong> The experiment must solve a specific goal and use case</li>
+<li><strong>Create an ML-ready dataset:</strong> Designed to answer that specific question</li>
+<li><strong>Iterate and learn:</strong> Expect to refine and evolve experiments for better models</li>
+</ul>
+<h3>AutoML Use Cases by Department</h3>
+<ul>
+<li><strong>Sales:</strong> Win/loss forecasting, lead conversion prediction</li>
+<li><strong>Finance:</strong> Fraud detection, credit risk assessment</li>
+<li><strong>HR:</strong> Employee retention prediction</li>
+<li><strong>Supply chain:</strong> Demand forecasting, inventory optimization</li>
+<li><strong>Customer:</strong> Churn prediction, lifetime value prediction</li>
+</ul>
+<h3>Real Customer Success</h3>
+<ul>
+<li><strong>Transbank (Chile):</strong> Uses Qlik AutoML to create algorithms winning back churned customers and preventing future churn</li>
+<li><strong>ADOC (El Salvador):</strong> Retail — uses external data (weather) via AutoML to predict demand and optimize stock per store</li>
+<li><strong>Gray Associates:</strong> Education SaaS — uses AutoML predictions with Shapley values (prediction influencers) in Qlik Sense dashboards</li>
+</ul>`,
+
+'4.3': `<h2>Formulating the ML Question</h2>
+<div class="module-label">Module 4 · Understanding Qlik Predict</div>
+<h3>The Structured ML Framework</h3>
+<p>Turning a business use case into a specific, ML-ready problem requires a structured framework:</p>
+<dl class="definition"><dt>Event Trigger</dt><dd>An action or event that triggers creation of new predictions. Each event trigger corresponds to a single row of data. Example: "A customer has signed up for a subscription."</dd></dl>
+<dl class="definition"><dt>Target</dt><dd>The value you are trying to predict. Must be specific in both <em>outcome</em> (what) and <em>time frame/horizon</em> (by when). Represented as a single column in the training dataset.</dd></dl>
+<dl class="definition"><dt>Features</dt><dd>Other columns in the dataset used to predict the target. Hypotheses about which variables will influence the target. Must be aggregated to the event trigger level or higher.</dd></dl>
+<dl class="definition"><dt>Prediction Point</dt><dd>The designated time when you stop collecting feature data and predict the target. Balance: accuracy (predict late enough to have good data) vs. actionability (predict early enough to act).</dd></dl>
+<h3>Time Windows</h3>
+<ul>
+<li><strong>Data accumulation window:</strong> Time between event trigger and prediction point (collecting feature data)</li>
+<li><strong>Action window:</strong> Time between prediction point and target horizon (time to act on predictions)</li>
+</ul>
+<h3>Example: Customer Churn</h3>
+<p><strong>Business case:</strong> "Will a customer churn?"</p>
+<ul>
+<li><strong>Event trigger:</strong> A new customer subscribes (new customer created in system)</li>
+<li><strong>Target:</strong> Will the customer churn within X months? (binary Yes/No)</li>
+<li><strong>Features:</strong> Login frequency, support ticket count, plan type, payment history</li>
+<li><strong>Prediction point:</strong> X weeks after subscription start</li>
+</ul>
+<h3>Example: Customer Repurchase</h3>
+<p>Correct ML question: <em>"Predicting one week after a customer places an order, will they order again within six months?"</em></p>
+<ul>
+<li>Event trigger: A customer places an order</li>
+<li>Target: Another order placed within six months (binary Yes/No)</li>
+<li>Prediction point: One week after order</li>
+</ul>
+<div class="info-box"><strong>Template:</strong> "Predicting [prediction point] after [event trigger], will [target] happen within [horizon]?"</div>`,
+
+'4.4': `<h2>Preparing the AutoML Dataset</h2>
+<div class="module-label">Module 4 · Understanding Qlik Predict</div>
+<h3>Getting Your Dataset ML-Ready</h3>
+<ol>
+<li><strong>Collect relevant data points:</strong> Define your ML question precisely, decide what to aggregate</li>
+<li><strong>Understand your data:</strong> Address sample size, feature selection (simpler is typically better)</li>
+<li><strong>Transform and remove data:</strong> Use business knowledge, transform data types, remove irrelevant features</li>
+</ol>
+<h3>Key Data Concepts</h3>
+<dl class="definition"><dt>Feature Engineering</dt><dd>Creating new feature columns from existing ones to gain additional predictive power. Example: converting home addresses to distances from a specific location; creating trip interval buckets from trip distance.</dd></dl>
+<dl class="definition"><dt>Cardinality</dt><dd>Uniqueness of data values in a column. <strong>High cardinality</strong> (many unique values, e.g., an ID field) has little variance — cannot identify patterns. <strong>Low cardinality</strong> (one unique value, constant) also useless. Solution: bin/group similar values.</dd></dl>
+<dl class="definition"><dt>Correlation</dt><dd>How features relate to each other. Totally correlated features are likely redundant — remove one. Example: coffee consumed and hours awake are correlated.</dd></dl>
+<dl class="definition"><dt>Data Leakage</dt><dd>Training data includes information you are trying to predict → model performs better in training than in real world (false accuracy). AutoML's intelligent optimization detects and removes target leakage.</dd></dl>
+<dl class="definition"><dt>Class Balancing</dt><dd>In binary classification, uneven data between two classes leads the model to learn more about the majority class. Class balancing improves performance on the minority class.</dd></dl>
+<h3>Intelligent Model Optimization</h3>
+<p>Qlik AutoML automatically:</p>
+<ul>
+<li>Removes features negatively affecting performance (highly correlated features)</li>
+<li>Detects and removes target leakage</li>
+<li>Removes features with low importance</li>
+<li>Removes outliers via outlier value weighting</li>
+<li>Applies class balancing for imbalanced binary targets</li>
+<li>Uses sampling to speed up training (starting small, scaling to 100%)</li>
+</ul>
+<h3>Qlik Cloud Tools for Dataset Preparation</h3>
+<ul>
+<li><strong>Qlik Talend Data Integration:</strong> Production pipelines, basic transformations</li>
+<li><strong>Qlik Cloud Scripting:</strong> Power of the Qlik Engine for data preparation using Qlik script language</li>
+<li><strong>Qlik Cloud Data Flow:</strong> No-code visual dataset development</li>
+</ul>`,
+
+'4.5': `<h2>Review &amp; Summary — Qlik Predict</h2>
+<div class="module-label">Module 4 · Understanding Qlik Predict</div>
+<h3>Module 4 Objectives Achieved</h3>
+<ul>
+<li>Explain key machine learning concepts</li>
+<li>Identify potential AutoML use cases</li>
+<li>Understand how to formulate a machine learning question</li>
+<li>Create an AutoML-ready dataset</li>
+</ul>
+<h3>ML Framework Quick Reference</h3>
+<div class="info-box">
+<strong>The ML Question Template:</strong><br>
+"Predicting <em>[prediction point]</em> after <em>[event trigger]</em>, will/what will <em>[target]</em> be within <em>[horizon]</em>?"<br><br>
+<strong>Four components:</strong> Event Trigger → Features → Prediction Point → Target (Horizon)
+</div>
+<h3>Key Data Quality Concepts Summary</h3>
+<ul>
+<li><strong>High cardinality</strong> = too many unique values → bin or remove</li>
+<li><strong>Correlation</strong> = redundant features → remove one</li>
+<li><strong>Data leakage</strong> = target info in features → AutoML detects automatically</li>
+<li><strong>Class imbalance</strong> = majority class dominates → class balancing</li>
+<li><strong>Feature engineering</strong> = create new features from existing ones for more predictive power</li>
+</ul>
+<h3>Qlik AutoML Positioning</h3>
+<p>Qlik AutoML empowers the "other 90%" of use cases that traditionally don't get attention from data science teams. It brings predictive analytics to the broader analytics community — not just data scientists.</p>`,
+
+'5.1': `<h2>Introduction to Qlik AutoML</h2>
+<div class="module-label">Module 5 · Qlik Predict Foundations</div>
+<h3>What is Qlik AutoML?</h3>
+<p>Qlik AutoML (automated machine learning) brings AI-generated machine learning models and predictive analytics directly to your organization's larger community of analytics users and teams, in a simple user experience focused on augmenting their intuition through machine intelligence.</p>
+<p>With AutoML, you can easily generate machine learning models, make predictions, and plan decisions — all within an <strong>intuitive, code-free user interface</strong>.</p>
+<h3>Qlik AutoML Workflow</h3>
+<ol>
+<li>Define the ML question and business use case</li>
+<li>Prepare an ML-ready dataset</li>
+<li>Create and run an AutoML experiment</li>
+<li>Review and select the best model</li>
+<li>Generate predictions on new data</li>
+<li>Integrate predictions in Qlik Sense dashboards</li>
+<li>Act on insights through alerting and automation</li>
+</ol>
+<h3>History of Augmented Analytics at Qlik</h3>
+<p>Qlik has been building AI/ML capabilities for years, evolving from the associative analytics engine to full AutoML. The journey: Qlik Sense Smart Visualizations → Insight Advisor → AutoML → Qlik AI Platform (Qlik Staige).</p>
+<h3>What AutoML Is and Is Not</h3>
+<div class="comparison-grid">
+<div class="comparison-card"><h4>AutoML Is</h4><ul><li>Automated ML pipeline (preprocessing, feature selection, model selection, hyperparameter tuning)</li><li>For business analysts AND data scientists</li><li>Code-free ML model building</li><li>Focuses on supervised learning (classification + regression)</li></ul></div>
+<div class="comparison-card"><h4>AutoML Is Not</h4><ul><li>Deep learning framework from scratch</li><li>Replacement for all data science work</li><li>Unsupervised clustering tool</li><li>A general-purpose AI assistant</li></ul></div>
+</div>`,
+
+'5.2': `<h2>Machine Learning Foundations &amp; EDA</h2>
+<div class="module-label">Module 5 · Qlik Predict Foundations</div>
+<h3>Exploratory Data Analysis (EDA)</h3>
+<p>EDA helps you make early discoveries in your data that can refine hypotheses, data quality, and performance of initial AutoML models.</p>
+<p>EDA topics in Qlik AutoML:</p>
+<ul>
+<li>Inspecting potential data sources</li>
+<li>Determining whether your data is viable</li>
+<li>Creating descriptive analysis for ML</li>
+<li>Informing dataset design from summarized insights</li>
+</ul>
+<h3>Feature Engineering Revisited</h3>
+<p>Feature engineering creates new features from existing ones. In the taxi fare example:</p>
+<ul>
+<li>Rename <code>trip_distance</code> → <code>trip_distance_km</code></li>
+<li>Create interval feature: <code>Replace(class(trip_distance, 5), '&lt;= x &lt;', 'to') as trip_interval_5km</code></li>
+<li>Create rate feature: <code>Round(fare_amount/trip_distance, 0.01) as fare_amount_per_km</code></li>
+<li>Create category: <code>If(fare_amount/trip_distance&gt;10, 'high', If(fare_amount/trip_distance&gt;5, 'mid', 'low')) as PriceGroup</code></li>
+</ul>
+<div class="warning-box"><strong>Data leakage:</strong> An ID field with unique values per row would be dropped automatically due to high cardinality.</div>
+<h3>Supervised Learning in AutoML</h3>
+<p>AutoML focuses on supervised learning with two problem types:</p>
+<div class="comparison-grid">
+<div class="comparison-card"><h4>Classification</h4><ul><li><strong>Binary:</strong> Two outcomes (Yes/No, Spam/Not Spam)</li><li><strong>Multi-class:</strong> Multiple categories (handwritten digits 0-9)</li><li>Output: a category label</li></ul></div>
+<div class="comparison-card"><h4>Regression</h4><ul><li>Predicts a continuous numerical value</li><li>Examples: taxi fare, house prices, stock prices</li><li>Output: a number ("how much" or "how many")</li></ul></div>
+</div>`,
+
+'5.3': `<h2>Model Scoring &amp; Prediction Influencers</h2>
+<div class="module-label">Module 5 · Qlik Predict Foundations</div>
+<h3>Model Scoring Basics</h3>
+<p>Model scoring measures how well your model generalizes to unseen data:</p>
+<ul>
+<li><strong>Classification Model Scoring:</strong> Accuracy, precision, recall, F1-score, AUC-ROC</li>
+<li><strong>Multiclass Model Scoring:</strong> Per-class metrics, confusion matrix</li>
+<li><strong>Regression Model Scoring:</strong> RMSE, MAE, R-squared</li>
+<li><strong>Time Series Model Scoring:</strong> Specific temporal accuracy metrics</li>
+</ul>
+<h3>Prediction Influencers (SHAP / Shapley Values)</h3>
+<p>Prediction influencers explain <strong>why a specific prediction was made</strong> by quantifying each feature's contribution to that prediction.</p>
+<dl class="definition"><dt>Shapley Values (SHAP)</dt><dd>From game theory — measures each feature's marginal contribution to the prediction. Provides a clear, feature-level explanation for every individual prediction, not just overall model importance.</dd></dl>
+<h3>How Prediction Influencers Work in Qlik AutoML</h3>
+<p>After model training, Qlik AutoML generates SHAP data for each prediction:</p>
+<ul>
+<li>Shows which features pushed the prediction higher or lower</li>
+<li>Enables "Explain-ability" — understanding the "why" behind predictions</li>
+<li>Gray Associates example: prediction influencers exported to Qlik Sense dashboards as colored heat maps showing opportunity/drawback</li>
+</ul>
+<h3>Applying Prediction Influencers</h3>
+<p>Business stakeholders can:</p>
+<ul>
+<li>Understand why a customer is predicted to churn</li>
+<li>Identify which features are driving revenue predictions</li>
+<li>Take targeted action based on the specific influencing factors</li>
+<li>Build trust in AI-driven decisions across the organization</li>
+</ul>
+<div class="info-box"><strong>Key insight:</strong> SHAP values are not just model-level feature importance — they explain each individual prediction, enabling personalized, actionable insights.</div>`,
+
+'5.4': `<h2>Review &amp; Resources</h2>
+<div class="module-label">Module 5 · Qlik Predict Foundations</div>
+<h3>Module 5 Objectives Achieved</h3>
+<ul>
+<li>Explain the basics of machine learning</li>
+<li>Build experiments in AutoML</li>
+<li>Describe how to integrate AutoML experiments in Qlik applications</li>
+</ul>
+<h3>Complete AutoML Lifecycle Summary</h3>
+<ol>
+<li><strong>Identify use case:</strong> Predictive problem, sufficient data, business impact</li>
+<li><strong>Formulate ML question:</strong> Event trigger → Target → Features → Prediction point</li>
+<li><strong>Prepare dataset:</strong> Feature engineering, handle cardinality, remove leakage, class balance</li>
+<li><strong>Run experiment:</strong> AutoML trains multiple models with intelligent optimization</li>
+<li><strong>Score models:</strong> Classification, regression, or time series metrics</li>
+<li><strong>Generate predictions:</strong> Apply best model to new data</li>
+<li><strong>Explain predictions:</strong> SHAP/Shapley values for each prediction</li>
+<li><strong>Integrate in Qlik Sense:</strong> Visualize predictions and influencers in dashboards</li>
+<li><strong>Act:</strong> What-if analysis, alerting, automated retraining (MLOps)</li>
+</ol>
+<div class="info-box"><strong>Remember:</strong> Qlik AutoML empowers the "other 90%" of use cases — making predictive analytics accessible to analytics teams, not just data scientists.</div>`
+};
+
+/* ====================================================
+   QUIZ DATA — 100 Questions
+==================================================== */
+const QUIZ = [
+/* Module 1 — 20 questions */
+{id:1,m:1,q:"Which TWO critical areas do all reputable AI definitions agree upon?",opts:["Mentions big data AND neural networks","Mentions computer/machine AND replicating human-type actions","Mentions cloud computing AND automation","Mentions robots AND predictive models"],ans:1},
+{id:2,m:1,q:"According to the National Intelligence Act, AI is defined as a machine-based system that can, for given human-defined objectives:",opts:["Replace human workers entirely","Make predictions, recommendations, or decisions influencing real or virtual environments","Generate creative content only","Process data faster than humans"],ans:1},
+{id:3,m:1,q:"Large Language Models (LLMs) differ from basic NLP primarily because they:",opts:["Only work with images, not text","Were developed before NLP and are simpler","Use an evolved version of NLP that learns from vast data to predict next words and generate human-like text","Require less data to train than traditional NLP systems"],ans:2},
+{id:4,m:1,q:"Which statement about Traditional AI is CORRECT?",opts:["Traditional AI can generate new content like images and music","Traditional AI is a newer technology than Generative AI","Traditional AI focuses on analyzing data and solving problems using algorithms and statistical models","Traditional AI only works with structured data"],ans:2},
+{id:5,m:1,q:"According to McKinsey, how much annual value can global adoption of Traditional AI generate?",opts:["$4.6 trillion USD","$1.3 trillion USD","$40 billion USD","At least $11 trillion USD"],ans:3},
+{id:6,m:1,q:"According to McKinsey, how much annual value can global adoption of Generative AI generate?",opts:["$4.6 trillion USD","$11 trillion USD","$1.3 trillion USD","$370 billion USD"],ans:0},
+{id:7,m:1,q:"The six guiding principles for AI-ready data are: Diverse, Timely, Accurate, Secure, Discoverable, and:",opts:["Documented","LLM-Ready","Scalable","Governed"],ans:1},
+{id:8,m:1,q:"Approximately what percentage of AI projects get stuck or scrapped according to Qlik research?",opts:["20%","60%","40%","80%"],ans:2},
+{id:9,m:1,q:"AI hallucinations are best described as:",opts:["Visual processing capabilities of AI systems","Incorrect or inaccurate AI outputs that are presented as fact","When AI models crash or malfunction during inference","AI systems that simulate human emotions"],ans:1},
+{id:10,m:1,q:"Why does AI struggle with calculations?",opts:["AI lacks the mathematical libraries for calculation","AI models are predictive models, not logic models — they predict patterns rather than compute","Calculations require real-time data that AI cannot access","AI was not trained on numerical data"],ans:1},
+{id:11,m:1,q:"In the Paris weather example, why did the AI give the forecast for Paris, France instead of Paris, Texas?",opts:["The AI's training data was outdated","The AI made a prediction based on learned data patterns, assuming the most likely location","The user's device had incorrect GPS settings","The AI did not understand the question"],ans:1},
+{id:12,m:1,q:"Which technique is recommended to identify and limit AI concerns?",opts:["Accept all AI outputs without question","Avoid using AI for important decisions entirely","Critically evaluate AI outputs and seek additional diverse sources","Use AI as the sole source for time-sensitive decisions"],ans:2},
+{id:13,m:1,q:"What ROI can successful AI implementations achieve according to IDC 2024?",opts:["40%","80%","200%","370%"],ans:3},
+{id:14,m:1,q:"Generative AI in Human Resources primarily helps by:",opts:["Replacing all HR staff","Creating job requisitions and automating posting, attracting desirable candidates faster","Only managing payroll calculations","Monitoring employee performance in real time"],ans:1},
+{id:15,m:1,q:"AI is a predictive model, not a logic model. This means that when asked '$95B - $25B = ?', an AI might incorrectly answer $63B because:",opts:["AI cannot access financial databases","AI predicts the next likely value based on patterns, rather than computing actual arithmetic","The model was not trained on Apple financial data","The question was ambiguous"],ans:1},
+{id:16,m:1,q:"Which of the following is an everyday AI example that filters unwanted messages?",opts:["Voice assistant","SPAM filtering","Self-driving cars","Weather forecasting"],ans:1},
+{id:17,m:1,q:"GenAI Product Development use case primarily creates value by:",opts:["Increasing software development costs","Decreasing manual coding times, minimizing errors, and accelerating time to market","Replacing all software developers","Only generating documentation, not actual code"],ans:1},
+{id:18,m:1,q:"The Summarization GenAI use case can analyze all EXCEPT:",opts:["Text documents and PDFs","E-mails and databases","Audio and video","Classified government databases (by design)"],ans:3},
+{id:19,m:1,q:"Seeking diverse resources when evaluating AI outputs means:",opts:["Only using AI from multiple vendors","Looking for answers from mixed and variable sources across different focus areas","Using AI from different countries","Consulting only academic sources"],ans:1},
+{id:20,m:1,q:"What percentage of AI projects fail according to various reports?",opts:["20%","40%","60%","80%"],ans:3},
+
+/* Module 2 — 25 questions */
+{id:21,m:2,q:"The 1956 Dartmouth Conference is considered significant because:",opts:["It was when the first computer was invented","It introduced the first commercial AI product","It marks the formal beginning of AI as an academic research field","It led to the creation of the internet"],ans:2},
+{id:22,m:2,q:"The two main branches or approaches to artificial intelligence are:",opts:["Knowledge-based systems and machine learning","Neural networks and expert systems","Deep learning and symbolic AI","Supervised learning and reinforcement learning"],ans:0},
+{id:23,m:2,q:"A key weakness of Connectionist AI (Neural Networks/Deep Learning) is:",opts:["Cannot perform any useful real-world tasks","Too simple for complex problems","Data inefficiency (high sample complexity), black box decisions, and poor generalization outside training distribution","Always produces incorrect results"],ans:2},
+{id:24,m:2,q:"GPT stands for:",opts:["Generative Pre-trained Transformer","General Purpose Technology","Generative Processing Tool","Global Pre-training Technology"],ans:0},
+{id:25,m:2,q:"The transformer architecture introduced in 2017 by Google Brain was primarily designed for:",opts:["Image recognition tasks","Video generation and editing","Database query optimization","Processing sequential data like natural language"],ans:3},
+{id:26,m:2,q:"GPUs accelerated AI development primarily because:",opts:["They are cheaper than CPUs","They require less electricity","They can store more data than hard drives","They have many cores enabling parallel processing, ideal for matrix operations in ML"],ans:3},
+{id:27,m:2,q:"According to a 2021 MIT report, what percentage of enterprise data is unstructured?",opts:["80 to 90 percent","50 to 60 percent","30 to 40 percent","20 to 30 percent"],ans:0},
+{id:28,m:2,q:"Which correctly describes the AI model hierarchy?",opts:["ChatGPT > GPT > LLM > Foundation Model","LLM > Foundation Model > GPT > ChatGPT","Foundation Model = LLM = GPT = ChatGPT","Foundation Model > LLM > GPT > ChatGPT"],ans:3},
+{id:29,m:2,q:"A Foundation Model is best described as:",opts:["A model only used for image generation","The smallest type of AI model for specific tasks","An ML model trained on vast amounts of data that can be specialized for various tasks","A model that requires no data to function"],ans:2},
+{id:30,m:2,q:"What is the primary purpose of Retrieval-Augmented Generation (RAG)?",opts:["To train models faster using GPU clusters","To replace human-written text with AI-generated content","To reduce model size for mobile deployment","To access current data by retrieving relevant vectors, helping models stay current with domain-specific content"],ans:3},
+{id:31,m:2,q:"Zero-shot prompting is best described as:",opts:["Providing multiple examples to teach the LLM the desired output structure","Providing one example of the desired output to help the model understand","Asking a question and relying on the LLM's pretrained information without providing any examples","Using no prompts at all — just raw data"],ans:2},
+{id:32,m:2,q:"Fine-tuning an LLM involves:",opts:["Adding more hardware to run the model faster","Reducing the model's vocabulary to save memory","Replacing the entire model with a new one","Updating the parameters of a pretrained model on domain-specific data to improve performance"],ans:3},
+{id:33,m:2,q:"Reinforcement Learning from Human Feedback (RLHF) works by:",opts:["Using automated scripts to evaluate model outputs","Having the AI play games to improve over time","Using human evaluators to provide feedback that guides model learning and improves responses","Reducing model size through automated pruning"],ans:2},
+{id:34,m:2,q:"Vector databases store data as:",opts:["Traditional rows and columns like SQL databases","Compressed images and audio files","Mathematical representations enabling ML models to retrieve related text based on similarity metrics, not exact matches","Plain text documents with keyword indexing"],ans:2},
+{id:35,m:2,q:"In-context learning (ICL) allows:",opts:["Training the model from scratch on new data","Replacing fine-tuning entirely in all scenarios","Providing context to the model during inference to improve responses without retraining","Using only structured data with LLMs"],ans:2},
+{id:36,m:2,q:"Semantic caching in LLM data pipelines:",opts:["Encrypts model outputs for security","Compresses training datasets to save storage","Prevents AI from storing sensitive information","Stores semantic representations (embeddings) temporarily to give faster, more exact responses"],ans:3},
+{id:37,m:2,q:"LLMOps stands for:",opts:["Limited Language Model Optimization","Layered Logic Machine Operations","Linear Logic Model Operations","Large Language Model Operations"],ans:3},
+{id:38,m:2,q:"In the context of LLM orchestration, 'AI agents' are:",opts:["Hardware components that run AI models","Security systems monitoring AI outputs","Human supervisors managing AI systems","Individual instances of language models performing particular tasks like summarization or translation"],ans:3},
+{id:39,m:2,q:"The original Qlik Associative Engine was inspired by:",opts:["Traditional SQL database design","Google's search algorithm","The associative memory powers of the human brain — designed by former neuroscientist Staffan Gestrelius","IBM's Watson technology"],ans:2},
+{id:40,m:2,q:"Which is NOT one of the three Hs commonly cited when discussing responsible AI deployment?",opts:["Harmlessness","Hostility","Honesty","Helpfulness"],ans:1},
+{id:41,m:2,q:"GDPR and CCPA relate to GenAI because:",opts:["They require all AI models to be open-source","They impose strict requirements on how businesses handle personal data, including data used in GenAI training","They mandate AI audits every year","They restrict AI use to government agencies only"],ans:1},
+{id:42,m:2,q:"Latency in the context of LLMs refers to:",opts:["The cost per API call","The number of tokens the model can process","The memory usage during training","The time it takes the LLM to make predictions once it receives input data"],ans:3},
+{id:43,m:2,q:"LangChain is primarily used as:",opts:["A data visualization library","An AI hardware accelerator","An orchestration library for chaining prompts, connecting to data sources, and scaling LLM applications","A cloud storage solution for LLM models"],ans:2},
+{id:44,m:2,q:"First-party data in the context of enterprise GenAI is:",opts:["Data acquired from external providers to enrich datasets","Data from trusted partners like inventory data shared with retail channels","Internal data produced through everyday business interactions with customers and prospects","Government-provided public datasets"],ans:2},
+{id:45,m:2,q:"In September 2023, 17 authors filed a class action against OpenAI alleging:",opts:["Privacy violations in ChatGPT user data collection","The AI generated defamatory content about them","Flagrant and harmful copyright infringement by using their copyrighted works to train AI without permission","Unfair competition with human writers"],ans:2},
+
+/* Module 3 — 20 questions */
+{id:46,m:3,q:"Qlik Answers is best described as:",opts:["A traditional keyword search engine for enterprise document management","A data visualization tool powered by machine learning","A plug-and-play, generative AI-powered knowledge assistant using RAG to answer questions from unstructured content","An automated business intelligence reporting platform"],ans:2},
+{id:47,m:3,q:"Unlike traditional search, Qlik Answers:",opts:["Only searches within Qlik Cloud applications","Returns only document titles without content summaries","Requires manual query building by administrators","Delivers personalized answers to questions instead of just lists of content, with full explainability"],ans:3},
+{id:48,m:3,q:"How many knowledge bases can be added to a single Qlik Answers assistant?",opts:["Up to 3","Up to 10","Unlimited","Up to 5"],ans:3},
+{id:49,m:3,q:"A Qlik Answers knowledge base is best described as:",opts:["A structured SQL database of company information","A collection of individual data sources indexed for answering natural language questions","A file storage system with keyword search capability","A traditional data warehouse for analytics"],ans:1},
+{id:50,m:3,q:"Which of the following is NOT a supported connection type in Qlik Answers?",opts:["Amazon S3","Google Drive","OneDrive","Direct SAP HANA connection"],ans:3},
+{id:51,m:3,q:"Which of the following is NOT a supported use case of Qlik Answers?",opts:["Customer support with technical documentation","Policy and procedure clarification","Sales enablement with product documentation","Summarizing the entire knowledge base or performing calculations across all documents"],ans:3},
+{id:52,m:3,q:"Qlik Answers guardrails include all EXCEPT:",opts:["LLM monitoring for harmful content and prompt injections","Sanitization of PII data and secrets before sending to LLM","Automatic improvement of source document quality","Hallucination mitigation by detecting contextual relevance"],ans:2},
+{id:53,m:3,q:"In Qlik Answers capacity measurement, one 'page' corresponds to:",opts:["One physical document page","1,000 words of text","2,000 characters of text data","One paragraph of content"],ans:2},
+{id:54,m:3,q:"What is the question rate limit for Qlik Answers?",opts:["50 per minute per subscription","20 per minute per subscription","100 per minute per subscription","10 per minute per subscription"],ans:1},
+{id:55,m:3,q:"Qlik Answers does NOT generate its own rankings or aggregations. However:",opts:["Users must create aggregations manually in Qlik Sense","Aggregations are completely unavailable in Qlik Answers","It can present rankings and aggregations if such summaries already exist in the data sources","Rankings require a separate paid add-on"],ans:2},
+{id:56,m:3,q:"Which third-party technology serves as the vector store in Qlik Answers?",opts:["Pinecone","OpenSearch","Chroma","Weaviate"],ans:1},
+{id:57,m:3,q:"AWS Bedrock is used in Qlik Answers to:",opts:["Store knowledge base documents","Process user authentication requests","Host the web interface","Connect to Claude, the LLM used for answer generation"],ans:3},
+{id:58,m:3,q:"Which third-party service ranks the most relevant embeddings returned by the vector search in Qlik Answers?",opts:["Cohere Rerank (hosted on Amazon SageMaker)","OpenAI Embeddings","Google Vertex AI Reranker","Azure Cognitive Search"],ans:0},
+{id:59,m:3,q:"To review assistant conversations in Qlik Answers, users require:",opts:["Standard user role","Space owner role only","Data analyst role","The audit admin user role"],ans:3},
+{id:60,m:3,q:"Regarding security and compliance, which statement about Qlik Answers is TRUE?",opts:["Qlik uses customer data to improve LLM training","Data may be transferred outside your selected cloud region","All customer data stays within the Qlik Cloud region of the user's tenant, and Qlik does NOT use customer data to train LLMs","Qlik Answers stores customer data on public cloud infrastructure"],ans:2},
+{id:61,m:3,q:"Which four regions are officially supported by Qlik Answers?",opts:["US West, US East, Europe West, Asia East","US East (Virginia), Europe (Ireland), Europe (Frankfurt), Asia-Pacific (Sydney)","US East, US West, Canada, Europe","All global AWS regions are supported"],ans:1},
+{id:62,m:3,q:"The minimum access level required to consume Qlik Answers assistants as an end user is:",opts:["Full admin access to Qlik Cloud","Space owner + Knowledge base creator role","View assistants permission + Search knowledge bases: Allowed","Any role in the Qlik Cloud tenant"],ans:2},
+{id:63,m:3,q:"What Qlik Answers best practice helps ensure users understand what kinds of questions to ask?",opts:["Disable the feedback loop to avoid confusion","Create overlapping assistants for redundancy","Create conversation starters describing the types of questions and how to ask them","Limit assistants to a single knowledge base"],ans:2},
+{id:64,m:3,q:"In Qlik Answers, Temporal is used for:",opts:["Time-based query filtering","Distributing workflows in the file ingestion (knowledge base indexing) workflow","Scheduling assistant answer reviews","Managing time-series data in knowledge bases"],ans:1},
+{id:65,m:3,q:"When Qlik Answers monthly question quota is reached:",opts:["Questions are queued and processed when quota resets","Overage is automatically charged","Users can no longer ask questions until the next month's quota resets","The assistant switches to basic keyword search mode"],ans:2},
+
+/* Module 4 — 20 questions */
+{id:66,m:4,q:"Machine learning is best defined as:",opts:["Software that follows pre-defined rules to make decisions","Hardware systems specialized for mathematical calculations","Computer systems that learn and adapt without explicit instructions, using algorithms and statistical models to analyze data patterns","Database systems that store and retrieve large amounts of data"],ans:2},
+{id:67,m:4,q:"The four main categories of machine learning problems are:",opts:["Classification, Regression, Clustering, and Deep Learning","Training, Testing, Validation, and Deployment","Supervised, Unsupervised, Semi-supervised, and Reinforcement Learning","Binary, Multi-class, Regression, and Time series"],ans:2},
+{id:68,m:4,q:"In the AutoML context, the 'target' is:",opts:["The event that triggers predictions","The accuracy goal for the ML model","The specific value you are trying to predict, defined by outcome and time horizon","The customer you are targeting with predictive marketing"],ans:2},
+{id:69,m:4,q:"The 'event trigger' in the AutoML ML question framework refers to:",opts:["An alert when the model's accuracy drops below a threshold","An action or event that triggers the creation of new predictions, each corresponding to a single row of data","The button that starts a new AutoML experiment","The training dataset upload confirmation"],ans:1},
+{id:70,m:4,q:"In the ML framework, 'features' are:",opts:["The target value itself","The prediction results generated by the model","The time horizon for predictions","Other columns in the dataset used to predict the target — hypotheses about influencing variables"],ans:3},
+{id:71,m:4,q:"The 'prediction point' is:",opts:["The accuracy score of the trained ML model","The last data point in the training set","The point where the model is first deployed to production","The designated time when you stop collecting feature data and predict the target for each row"],ans:3},
+{id:72,m:4,q:"The 'data accumulation window' is the time between:",opts:["Model training and model deployment","Data collection and data cleaning","The prediction point and the target horizon","The event trigger and the prediction point"],ans:3},
+{id:73,m:4,q:"Binary classification is best described as:",opts:["Predicting a continuous numerical value","Predicting one of exactly two possible outcomes (Yes/No, spam/not spam)","Grouping unlabeled data into clusters","Predicting from more than two possible categories"],ans:1},
+{id:74,m:4,q:"A regression problem in machine learning involves:",opts:["Assigning data to predefined categories","Grouping similar data points together","Learning through environment interaction with rewards","Predicting a continuous numerical value based on input features"],ans:3},
+{id:75,m:4,q:"Qlik AutoML's three key areas are:",opts:["Collect, Analyze, and Deploy","Import, Transform, and Export","Train, Test, and Validate","Predict, Explain, and Act"],ans:3},
+{id:76,m:4,q:"'Data leakage' in machine learning means:",opts:["Model outputs are accidentally shared with competitors","Data flows between systems without proper security controls","Training data includes information about what you're trying to predict, creating false accuracy in training but poor real-world performance","Sensitive data is exposed to unauthorized users"],ans:2},
+{id:77,m:4,q:"'Cardinality' in ML datasets refers to:",opts:["The accuracy of model predictions","The number of rows in a dataset","The uniqueness of data values in a column","The mathematical distance between data points"],ans:2},
+{id:78,m:4,q:"Intelligent Model Optimization in Qlik AutoML automatically excludes features that:",opts:["Have more than 10 unique values","Are numerical when the target is categorical","All have missing values","Can negatively affect model performance — including correlated features, target leakage, and outliers"],ans:3},
+{id:79,m:4,q:"'Class balancing' in binary classification is used to:",opts:["Ensure equal numbers of training and testing data","Balance model accuracy between precision and recall","Distribute data evenly across computing nodes","Improve model performance when one class has significantly more data than the other (majority/minority imbalance)"],ans:3},
+{id:80,m:4,q:"Which of the following is NOT a well-known AutoML tool?",opts:["Google AutoML","H2O.ai","Qlik Tableau AutoML","Microsoft Azure AutoML"],ans:2},
+{id:81,m:4,q:"Feature engineering is:",opts:["Designing hardware components for ML processing","Selecting the cloud infrastructure for model training","Designing the user interface for presenting ML results","Creating new feature columns from existing ones to gain additional predictive power from the source data"],ans:3},
+{id:82,m:4,q:"Correct customer churn ML question format:",opts:["Which customers churned in the last year?","What is the average churn rate?","How many customers are at risk?","Predicting X weeks after a new customer subscribes, will they churn within the next Y months?"],ans:3},
+{id:83,m:4,q:"Sampling in Qlik AutoML model training is used to:",opts:["Remove duplicate records from the training data","Select random features for each model run","Limit training data to the most recent records only","Speed up training by starting on small data subsets, gradually scaling to 100% of the dataset"],ans:3},
+{id:84,m:4,q:"The Qlik Cloud tools available for preparing AutoML datasets are:",opts:["Only Qlik Sense scripting is available","Excel and CSV preprocessing only","Python and R scripts only","Qlik Talend Data Integration, Qlik Cloud Scripting, and Qlik Cloud Data Flow"],ans:3},
+{id:85,m:4,q:"AutoML is especially valuable when:",opts:["The budget for data scientists is unlimited","Real-time processing is not required","Large amounts of labeled data are unavailable","The team lacks ML expertise AND time constraints prevent manual model experimentation"],ans:3},
+
+/* Module 5 — 15 questions */
+{id:86,m:5,q:"AutoML (Automated Machine Learning) primarily automates which tasks?",opts:["Only model deployment and monitoring","Only data collection and storage","Only report generation from model outputs","Data preprocessing, feature selection, model selection, hyperparameter tuning, and model evaluation"],ans:3},
+{id:87,m:5,q:"Shapley Values (SHAP) in Qlik AutoML are used to:",opts:["Measure the overall speed of the model","Determine the optimal number of training epochs","Explain prediction influencers by quantifying each feature's contribution to a specific prediction","Calculate the cost per prediction"],ans:2},
+{id:88,m:5,q:"Exploratory Data Analysis (EDA) in Qlik AutoML helps to:",opts:["Deploy models to production environments","Inspect potential data sources, determine data viability, and inform dataset design from summarized insights","Generate business reports from predictions","Create dashboards for end users"],ans:1},
+{id:89,m:5,q:"Model Scoring in AutoML covers:",opts:["Only binary classification accuracy metrics","User satisfaction scores for the model","Business ROI calculations from predictions","Classification model scoring, regression model scoring, and time series model scoring"],ans:3},
+{id:90,m:5,q:"Qlik AutoML brings machine learning to:",opts:["Only professional data scientists","Only IT and DevOps departments","Only executive leadership for strategic decisions","The larger community of analytics users and teams — not just data scientists"],ans:3},
+{id:91,m:5,q:"Supervised learning requires:",opts:["Unlabeled data only","Labeled data where both input features and corresponding outputs are known","A mix of labeled and unlabeled data in equal proportions","No training data — only rules"],ans:1},
+{id:92,m:5,q:"Which is an example of a classification problem suitable for AutoML?",opts:["Predicting the exact fare for a taxi ride","Grouping customers into segments without labels","Predicting whether a customer will churn (Yes/No)","Translating documents from English to French"],ans:2},
+{id:93,m:5,q:"Which is an example of a regression problem suitable for AutoML?",opts:["Detecting spam emails (spam vs. not spam)","Identifying customer segments based on purchasing behavior","Predicting the fare amount for a taxi ride based on distance and trip features","Classifying product images into categories"],ans:2},
+{id:94,m:5,q:"In a taxi fare AutoML dataset, which field would likely be DROPPED by Intelligent Model Optimization due to high cardinality?",opts:["An ID field with a unique value per trip","Trip distance in kilometers","Fare amount in dollars","Pick-up borough"],ans:0},
+{id:95,m:5,q:"Prediction influencers in Qlik AutoML allow users to:",opts:["Change the model's prediction manually after it is generated","Add new training data to improve future predictions","Export all predictions to external systems automatically","Understand why a specific prediction was made and which features influenced it most"],ans:3},
+{id:96,m:5,q:"MLOps capabilities in Qlik AutoML include:",opts:["Only model training and evaluation","Only model deployment steps","Only performance reporting dashboards","Monitoring, approval workflows, and automated model retraining"],ans:3},
+{id:97,m:5,q:"Correlation in a training dataset — features that are totally correlated should be:",opts:["Duplicated to increase model robustness","Kept as they provide double the signal","Removed from the dataset as they are likely redundant","Combined into a single feature using PCA"],ans:2},
+{id:98,m:5,q:"Which statement best describes Qlik AutoML's 'Explain' capability?",opts:["Technical documentation for IT teams about model architecture","Marketing materials for business stakeholders","Only model accuracy metrics on the test set","Comprehensive model explainability with clear links to underlying data, building confidence in AI-driven decisions"],ans:3},
+{id:99,m:5,q:"The AutoML workflow correct order is:",opts:["Prepare dataset → Define use case → Train models → Deploy → Predict","Train models → Prepare dataset → Define use case → Evaluate","Define use case → Prepare dataset → Train experiment → Review models → Generate predictions → Integrate → Act","Collect data → Deploy model → Train → Define use case"],ans:2},
+{id:100,m:5,q:"Gray Associates uses Qlik AutoML and prediction influencers (SHAP data) to:",opts:["Only monitor website traffic patterns","Manage employee scheduling at educational institutions","Store financial data for compliance audits","Predict where educational institutions can reach the most students, with colored heat maps showing opportunity/drawback in Qlik Sense dashboards"],ans:3}
+];
+
+/* ====================================================
+   STATE
+==================================================== */
+let currentView = 'study';
+let currentLesson = null;
+let allLessons = [];
+let quizState = {
+  currentQ: 0,
+  answers: {},
+  answered: {},
+  mode: 'all', // 'all' or module id
+  filteredQ: [],
+  submitted: false,
+  showResults: false
+};
+
+// Build flat lesson list
+MODULES.forEach(m => m.lessons.forEach(l => allLessons.push({ ...l, moduleId: m.id })));
+
+/* ====================================================
+   LOCAL STORAGE
+==================================================== */
+function loadProgress() {
+  try { return JSON.parse(localStorage.getItem('qlik_cert_progress') || '{}'); } catch { return {}; }
+}
+function saveProgress(p) {
+  localStorage.setItem('qlik_cert_progress', JSON.stringify(p));
+}
+function markLessonDone(lessonId) {
+  const p = loadProgress();
+  p.lessons = p.lessons || {};
+  p.lessons[lessonId] = true;
+  saveProgress(p);
+}
+function saveBestScore(score, total, perModule) {
+  const p = loadProgress();
+  p.quizScores = p.quizScores || [];
+  p.quizScores.push({ score, total, perModule, date: new Date().toISOString() });
+  if (!p.bestScore || score / total > p.bestScore.score / p.bestScore.total) {
+    p.bestScore = { score, total, perModule };
+  }
+  saveProgress(p);
+}
+
+/* ====================================================
+   VIEWS
+==================================================== */
+function showView(view) {
+  currentView = view;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const tabIdx = ['study','quiz','progress'].indexOf(view);
+  if (tabIdx >= 0) document.querySelectorAll('.tab-btn')[tabIdx].classList.add('active');
+  document.getElementById('sidebar').style.display = view === 'study' ? 'block' : 'none';
+  document.getElementById('content').style.display = view === 'study' ? 'block' : 'none';
+  document.getElementById('quiz-view').style.display = view === 'quiz' ? 'block' : 'none';
+  document.getElementById('progress-view').style.display = view === 'progress' ? 'block' : 'none';
+  document.getElementById('search-view').style.display = view === 'search' ? 'block' : 'none';
+  if (view === 'quiz') renderQuiz();
+  if (view === 'progress') renderProgress();
+}
+
+/* ====================================================
+   STUDY VIEW
+==================================================== */
+function buildSidebar() {
+  const p = loadProgress();
+  const done = p.lessons || {};
+  let html = '';
+  MODULES.forEach((m, mi) => {
+    html += `<div class="module-header ${mi === 0 ? 'open' : ''}" onclick="toggleModule(this)" style="border-left:3px solid ${m.color}">
+      <div class="module-dot" style="background:${m.color}"></div>
+      <span class="module-title">Module ${m.id}: ${m.title}</span>
+      <span class="module-chevron">▶</span>
+    </div>
+    <div class="lesson-list">`;
+    m.lessons.forEach(l => {
+      const isDone = done[l.id];
+      const isActive = currentLesson === l.id;
+      html += `<div class="lesson-item ${isDone ? 'done' : ''} ${isActive ? 'active' : ''}" onclick="loadLesson('${l.id}')">${l.title}</div>`;
+    });
+    html += '</div>';
+  });
+  document.getElementById('sidebar').innerHTML = html;
+}
+
+function toggleModule(el) {
+  el.classList.toggle('open');
+}
+
+function loadLesson(id) {
+  currentLesson = id;
+  buildSidebar();
+  const idx = allLessons.findIndex(l => l.id === id);
+  const lesson = allLessons[idx];
+  const module = MODULES.find(m => m.id === lesson.moduleId);
+  const content = LESSON_CONTENT[id];
+  const prevLesson = idx > 0 ? allLessons[idx - 1] : null;
+  const nextLesson = idx < allLessons.length - 1 ? allLessons[idx + 1] : null;
+  let nav = '<div class="lesson-nav">';
+  if (prevLesson) {
+    nav += `<button class="lesson-nav button btn-prev" onclick="loadLesson('${prevLesson.id}')">← Previous</button>`;
+  } else {
+    nav += '<span></span>';
+  }
+  if (nextLesson) {
+    nav += `<button class="lesson-nav button btn-next" onclick="markAndNext('${id}', '${nextLesson.id}')">Next →</button>`;
+  } else {
+    nav += `<button class="lesson-nav button btn-complete" onclick="markLessonDone('${id}'); buildSidebar(); showView('progress')">Complete Module ✓</button>`;
+  }
+  nav += '</div>';
+  document.getElementById('content').innerHTML = `<div class="lesson-page">${content}${nav}</div>`;
+  document.getElementById('content').scrollTop = 0;
+}
+
+function markAndNext(currentId, nextId) {
+  markLessonDone(currentId);
+  loadLesson(nextId);
+}
+
+function showWelcome() {
+  let html = '<div class="welcome"><h2>Welcome to Qlik AI Certification Prep</h2><p>This platform covers all topics tested on the Qlik AI Certification exam. Study each module, then test yourself with 100 certification-level multiple choice questions.</p><div class="module-cards">';
+  MODULES.forEach(m => {
+    html += `<div class="module-card" onclick="loadLesson('${m.lessons[0].id}')">
+      <div class="module-card-dot" style="background:${m.color}"></div>
+      <h3>${m.title}</h3>
+      <p>${m.lessons.length} lessons</p>
+      <div class="lesson-count">Start →</div>
+    </div>`;
+  });
+  html += '</div></div>';
+  document.getElementById('content').innerHTML = html;
+}
+
+/* ====================================================
+   QUIZ VIEW
+==================================================== */
+function startQuiz(moduleFilter) {
+  quizState.mode = moduleFilter || 'all';
+  quizState.filteredQ = moduleFilter === 'all'
+    ? [...QUIZ]
+    : QUIZ.filter(q => q.m === parseInt(moduleFilter));
+  // Shuffle
+  for (let i = quizState.filteredQ.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [quizState.filteredQ[i], quizState.filteredQ[j]] = [quizState.filteredQ[j], quizState.filteredQ[i]];
+  }
+  quizState.currentQ = 0;
+  quizState.answers = {};
+  quizState.answered = {};
+  quizState.submitted = false;
+  quizState.showResults = false;
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const qv = document.getElementById('quiz-view');
+  if (quizState.showResults) {
+    renderResults();
+    return;
+  }
+  if (!quizState.filteredQ.length) {
+    // Show quiz start screen
+    let html = `<div style="max-width:820px;margin:0 auto">
+      <h2 style="color:var(--navy);margin-bottom:8px">Certification Quiz — 100 Questions</h2>
+      <p style="color:var(--text-muted);margin-bottom:24px">Test your knowledge at Qlik certification level. Choose all questions or a specific module.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:32px">
+        <button class="quiz-btn" style="background:var(--green);color:#fff" onclick="startQuiz('all')">All 100 Questions</button>`;
+    MODULES.forEach(m => {
+      html += `<button class="quiz-btn" style="background:${m.color};color:#fff" onclick="startQuiz('${m.id}')">Module ${m.id} Only</button>`;
+    });
+    html += '</div>';
+    const p = loadProgress();
+    if (p.bestScore) {
+      const pct = Math.round(p.bestScore.score / p.bestScore.total * 100);
+      html += `<div class="info-box"><strong>Your best score:</strong> ${p.bestScore.score}/${p.bestScore.total} (${pct}%)</div>`;
+    }
+    html += '</div>';
+    qv.innerHTML = html;
+    return;
+  }
+  const q = quizState.filteredQ[quizState.currentQ];
+  const total = quizState.filteredQ.length;
+  const answered = Object.keys(quizState.answered).length;
+  const pct = Math.round(answered / total * 100);
+  const modColor = MODULE_COLORS[q.m - 1];
+  const modName = MODULES.find(m => m.id === q.m).title;
+  const isAnswered = quizState.answered[quizState.currentQ] !== undefined;
+  const selectedAns = quizState.answers[quizState.currentQ];
+  let html = `
+    <div class="quiz-filter">
+      <button class="filter-btn ${quizState.mode === 'all' ? 'active' : ''}" onclick="startQuiz('all')">All</button>`;
+  MODULES.forEach(m => {
+    html += `<button class="filter-btn ${quizState.mode == m.id ? 'active' : ''}" onclick="startQuiz('${m.id}')">M${m.id}</button>`;
+  });
+  html += `</div>
+    <div class="quiz-header">
+      <h2>Question ${quizState.currentQ + 1} of ${total}</h2>
+      <div class="quiz-stats">
+        <span><strong>${answered}</strong> answered</span>
+        <span><strong>${Math.round(Object.values(quizState.answered).filter(v => v === true).length / Math.max(answered, 1) * 100)}%</strong> correct</span>
+      </div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="question-card">
+      <div class="question-meta">
+        <span class="question-num">Q${q.id}</span>
+        <span class="module-tag" style="background:${modColor}22;color:${modColor}">Module ${q.m}: ${modName}</span>
+      </div>
+      <div class="question-text">${q.q}</div>
+      <div class="options">`;
+  q.opts.forEach((opt, i) => {
+    let cls = '';
+    if (isAnswered) {
+      if (i === q.ans) cls = 'correct';
+      else if (i === selectedAns && selectedAns !== q.ans) cls = 'wrong';
+    } else if (i === selectedAns) {
+      cls = 'selected';
+    }
+    const letters = ['A','B','C','D'];
+    html += `<button class="option-btn ${cls}" ${isAnswered ? 'disabled' : ''} onclick="selectAnswer(${i})">
+      <span class="option-letter">${letters[i]}.</span>
+      <span>${opt}</span>
+    </button>`;
+  });
+  html += '</div>';
+  if (isAnswered) {
+    const correct = selectedAns === q.ans;
+    html += `<div class="explanation-box ${correct ? '' : 'wrong-exp'}" style="display:block">
+      ${correct ? '✓ Correct!' : `✗ Incorrect. The correct answer is: <strong>${q.opts[q.ans]}</strong>`}
+    </div>`;
+  }
+  html += `</div>
+    <div class="quiz-controls">
+      <button class="quiz-btn" id="btn-prev-q" onclick="prevQuestion()" ${quizState.currentQ === 0 ? 'disabled style="opacity:.4"' : ''}>← Previous</button>
+      <button class="quiz-btn" id="btn-submit" ${isAnswered ? 'disabled style="display:none"' : ''} onclick="submitAnswer()" ${selectedAns === undefined && !isAnswered ? 'disabled style="opacity:.4"' : ''}>Submit Answer</button>
+      <button class="quiz-btn" id="btn-next-q" style="${isAnswered ? 'display:inline-block' : 'display:none'};background:var(--green);color:#fff" onclick="nextQuestion()">${quizState.currentQ < total - 1 ? 'Next →' : 'Finish Quiz'}</button>
+    </div>`;
+  qv.innerHTML = html;
+}
+
+function selectAnswer(idx) {
+  if (quizState.answered[quizState.currentQ] !== undefined) return;
+  quizState.answers[quizState.currentQ] = idx;
+  renderQuiz();
+}
+
+function submitAnswer() {
+  const q = quizState.filteredQ[quizState.currentQ];
+  const selected = quizState.answers[quizState.currentQ];
+  if (selected === undefined) return;
+  quizState.answered[quizState.currentQ] = (selected === q.ans);
+  renderQuiz();
+}
+
+function nextQuestion() {
+  const total = quizState.filteredQ.length;
+  if (quizState.currentQ < total - 1) {
+    quizState.currentQ++;
+    renderQuiz();
+  } else {
+    finishQuiz();
+  }
+}
+
+function prevQuestion() {
+  if (quizState.currentQ > 0) {
+    quizState.currentQ--;
+    renderQuiz();
+  }
+}
+
+function finishQuiz() {
+  const total = quizState.filteredQ.length;
+  let score = 0;
+  const perModule = {};
+  MODULES.forEach(m => { perModule[m.id] = { score: 0, total: 0 }; });
+  quizState.filteredQ.forEach((q, i) => {
+    const correct = quizState.answered[i] === true;
+    if (correct) score++;
+    perModule[q.m].total++;
+    if (correct) perModule[q.m].score++;
+  });
+  saveBestScore(score, total, perModule);
+  quizState.finalScore = score;
+  quizState.finalTotal = total;
+  quizState.finalPerModule = perModule;
+  quizState.showResults = true;
+  renderResults();
+}
+
+function renderResults() {
+  const qv = document.getElementById('quiz-view');
+  const { finalScore: score, finalTotal: total, finalPerModule: perModule } = quizState;
+  const pct = Math.round(score / total * 100);
+  const pass = pct >= 70;
+  let html = `<div id="results-view" style="display:block">
+    <div class="results-hero">
+      <div class="score-label">Your Score</div>
+      <div class="big-score">${pct}%</div>
+      <div>${score} / ${total} correct</div>
+      <div class="verdict">${pass ? '🎯 PASS — Certification Ready!' : '📚 Keep Studying — Aim for 70%+'}</div>
+    </div>
+    <div class="module-results">`;
+  MODULES.forEach(m => {
+    const ms = perModule[m.id];
+    if (!ms || ms.total === 0) return;
+    const mpct = Math.round(ms.score / ms.total * 100);
+    html += `<div class="module-result-card">
+      <h4>Module ${m.id}: ${m.title}</h4>
+      <div class="mod-score">${mpct}% <small style="font-size:.9rem;font-weight:400">(${ms.score}/${ms.total})</small></div>
+      <div class="mod-bar"><div class="mod-fill" style="width:${mpct}%;background:${m.color}"></div></div>
+    </div>`;
+  });
+  html += `</div>
+    <div class="results-actions">
+      <button class="results-actions button btn-restart" onclick="startQuiz(quizState.mode)" style="background:var(--green);color:#fff;padding:11px 26px;border-radius:7px;border:none;cursor:pointer;font-weight:600;font-size:.9rem">Try Again</button>
+      <button onclick="quizState.showResults=false;quizState.currentQ=0;quizState.answers={};quizState.answered={};renderQuiz()" style="background:transparent;color:var(--navy);border:1px solid var(--border);padding:11px 26px;border-radius:7px;cursor:pointer;font-weight:600;font-size:.9rem">Review Questions</button>
+      <button onclick="showView('study')" style="background:var(--navy);color:#fff;padding:11px 26px;border-radius:7px;border:none;cursor:pointer;font-weight:600;font-size:.9rem">Back to Study</button>
+    </div>
+  </div>`;
+  qv.innerHTML = html;
+}
+
+/* ====================================================
+   PROGRESS VIEW
+==================================================== */
+function renderProgress() {
+  const p = loadProgress();
+  const done = p.lessons || {};
+  const pv = document.getElementById('progress-view');
+  let totalLessons = allLessons.length;
+  let completedLessons = Object.keys(done).filter(k => done[k]).length;
+  let html = `<div class="progress-page">
+    <h2>Your Progress</h2>
+    <div class="info-box" style="margin-bottom:24px">
+      <strong>${completedLessons}</strong> of <strong>${totalLessons}</strong> lessons completed
+      ${p.bestScore ? ` · Best quiz score: <strong>${Math.round(p.bestScore.score/p.bestScore.total*100)}%</strong> (${p.bestScore.score}/${p.bestScore.total})` : ''}
+    </div>
+    <div class="progress-modules">`;
+  MODULES.forEach(m => {
+    const modLessons = m.lessons.length;
+    const modDone = m.lessons.filter(l => done[l.id]).length;
+    const modPct = Math.round(modDone / modLessons * 100);
+    let quizInfo = '';
+    if (p.bestScore && p.bestScore.perModule) {
+      const ms = p.bestScore.perModule[m.id];
+      if (ms && ms.total > 0) {
+        const mpct = Math.round(ms.score / ms.total * 100);
+        quizInfo = `<span class="best-score-tag ${mpct >= 70 ? 'score-pass' : 'score-fail'}">${mpct}% quiz</span>`;
+      }
+    }
+    html += `<div class="progress-module-card">
+      <h3><span style="width:12px;height:12px;background:${m.color};border-radius:50%;display:inline-block"></span> Module ${m.id}: ${m.title} ${quizInfo}</h3>
+      <div class="prog-bar-wrap">
+        <span class="prog-label">Lessons</span>
+        <div class="prog-bar"><div class="prog-fill" style="width:${modPct}%;background:${m.color}"></div></div>
+        <span class="prog-pct">${modDone}/${modLessons}</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">`;
+    m.lessons.forEach(l => {
+      const isDone = done[l.id];
+      html += `<span style="font-size:.75rem;padding:3px 10px;border-radius:99px;background:${isDone ? m.color + '22' : 'var(--bg)'};color:${isDone ? m.color : 'var(--text-muted)'};border:1px solid ${isDone ? m.color + '44' : 'var(--border)'};cursor:pointer" onclick="showView('study');loadLesson('${l.id}')">${l.title} ${isDone ? '✓' : ''}</span>`;
+    });
+    html += `</div></div>`;
+  });
+  html += `</div>
+    <button class="reset-btn" onclick="if(confirm('Reset all progress?')){localStorage.removeItem('qlik_cert_progress');renderProgress()}">Reset All Progress</button>
+  </div>`;
+  pv.innerHTML = html;
+}
+
+/* ====================================================
+   SEARCH
+==================================================== */
+let searchTimer = null;
+
+function handleSearch(val) {
+  clearTimeout(searchTimer);
+  if (!val.trim()) {
+    // If input cleared, go back to previous non-search view
+    if (currentView === 'search') showView('study');
+    return;
+  }
+  searchTimer = setTimeout(() => {
+    showView('search');
+    performSearch(val.trim());
+  }, 180);
+}
+
+function stripHtml(html) {
+  return html.replace(/<[^>]+>/g, ' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/\s+/g,' ').trim();
+}
+
+function getExcerpt(text, term, ctxLen = 80) {
+  const idx = text.toLowerCase().indexOf(term.toLowerCase());
+  if (idx === -1) return text.slice(0, 160) + '…';
+  const start = Math.max(0, idx - ctxLen);
+  const end = Math.min(text.length, idx + term.length + ctxLen);
+  let excerpt = (start > 0 ? '…' : '') + text.slice(start, end) + (end < text.length ? '…' : '');
+  return excerpt;
+}
+
+function highlightTerms(text, terms) {
+  let out = text;
+  terms.forEach(t => {
+    const re = new RegExp(`(${t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+    out = out.replace(re, '<mark>$1</mark>');
+  });
+  return out;
+}
+
+function performSearch(query) {
+  const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+  const results = [];
+
+  MODULES.forEach(m => {
+    m.lessons.forEach(l => {
+      const raw = LESSON_CONTENT[l.id] || '';
+      const text = stripHtml(raw);
+      const textLow = text.toLowerCase();
+      const matchCount = terms.reduce((acc, t) => {
+        let count = 0, pos = 0;
+        while ((pos = textLow.indexOf(t, pos)) !== -1) { count++; pos++; }
+        return acc + count;
+      }, 0);
+      if (matchCount > 0) {
+        const bestTerm = terms.reduce((best, t) => textLow.includes(t) ? (best || t) : best, null) || terms[0];
+        const rawExcerpt = getExcerpt(text, bestTerm);
+        results.push({ lessonId: l.id, lessonTitle: l.title, moduleId: m.id, moduleTitle: m.title, moduleColor: m.color, matchCount, excerpt: highlightTerms(rawExcerpt, terms) });
+      }
+    });
+  });
+
+  results.sort((a, b) => b.matchCount - a.matchCount);
+  renderSearchResults(results, query);
+}
+
+function renderSearchResults(results, query) {
+  const sv = document.getElementById('search-view');
+  if (!results.length) {
+    sv.innerHTML = `<div class="search-results-page"><h2>Search</h2><div class="search-no-results"><div class="no-icon">🔍</div><p>No results for "<strong>${query}</strong>"</p><p style="font-size:.85rem;margin-top:6px">Try different keywords</p></div></div>`;
+    return;
+  }
+  let html = `<div class="search-results-page">
+    <h2>Search results</h2>
+    <p class="search-meta">${results.length} lesson${results.length > 1 ? 's' : ''} found for "<strong>${query}</strong>"</p>`;
+  results.forEach(r => {
+    html += `<div class="search-result-card" onclick="clearSearch();loadLesson('${r.lessonId}')">
+      <div class="search-result-header">
+        <span class="search-result-module" style="background:${r.moduleColor}">Module ${r.moduleId}</span>
+        <span class="search-result-lesson">${r.lessonTitle}</span>
+      </div>
+      <div class="search-result-excerpt">${r.excerpt}</div>
+    </div>`;
+  });
+  html += '</div>';
+  sv.innerHTML = html;
+}
+
+function clearSearch() {
+  document.getElementById('search-input').value = '';
+  showView('study');
+}
+
+/* ====================================================
+   PODCAST PLAYER
+==================================================== */
+const PODCASTS = [
+  { file: 'Podcasts/How_to_beat_the_AI_failure_rate.m4a', title: 'How to Beat the AI Failure Rate', sub: 'Podcast · Module 1' }
+];
+let podAudio = null;
+let podPlaying = false;
+let podCurrent = 0;
+
+function togglePodcast() {
+  const bar = document.getElementById('podcast-bar');
+  if (bar.classList.contains('visible')) {
+    closePodcast();
+  } else {
+    openPodcast(podCurrent);
+  }
+}
+
+function openPodcast(idx) {
+  podCurrent = idx;
+  const p = PODCASTS[idx];
+  const bar = document.getElementById('podcast-bar');
+  document.getElementById('pod-title').textContent = p.title;
+  document.getElementById('pod-sub').textContent = p.sub;
+  if (!podAudio || podAudio.src !== p.file) {
+    if (podAudio) { podAudio.pause(); }
+    podAudio = new Audio(p.file);
+    podAudio.addEventListener('timeupdate', updatePodProgress);
+    podAudio.addEventListener('loadedmetadata', updatePodProgress);
+    podAudio.addEventListener('ended', () => { podPlaying = false; updatePlayBtn(); });
+  }
+  bar.classList.add('visible');
+  document.body.classList.add('pod-open');
+  updatePlayBtn();
+  updatePodProgress();
+}
+
+function closePodcast() {
+  const bar = document.getElementById('podcast-bar');
+  bar.classList.remove('visible');
+  document.body.classList.remove('pod-open');
+  if (podAudio && podPlaying) { podAudio.pause(); podPlaying = false; }
+  updatePlayBtn();
+}
+
+function podPlayPause() {
+  if (!podAudio) return;
+  if (podPlaying) {
+    podAudio.pause();
+    podPlaying = false;
+  } else {
+    podAudio.play().catch(() => {});
+    podPlaying = true;
+  }
+  updatePlayBtn();
+}
+
+function podSkip(sec) {
+  if (!podAudio) return;
+  podAudio.currentTime = Math.max(0, Math.min(podAudio.duration || 0, podAudio.currentTime + sec));
+}
+
+function updatePlayBtn() {
+  const btn = document.getElementById('pod-play-btn');
+  if (btn) btn.textContent = podPlaying ? '⏸' : '▶';
+}
+
+function updatePodProgress() {
+  if (!podAudio) return;
+  const cur = podAudio.currentTime || 0;
+  const dur = podAudio.duration || 0;
+  document.getElementById('pod-current').textContent = fmtTime(cur);
+  document.getElementById('pod-duration').textContent = fmtTime(dur);
+  const seek = document.getElementById('pod-seek');
+  if (seek && dur > 0) seek.value = (cur / dur * 100).toFixed(1);
+}
+
+function podSeek(val) {
+  if (!podAudio || !podAudio.duration) return;
+  podAudio.currentTime = val / 100 * podAudio.duration;
+}
+
+function podSetSpeed(val) {
+  if (podAudio) podAudio.playbackRate = parseFloat(val);
+}
+
+function fmtTime(s) {
+  if (!s || isNaN(s)) return '0:00';
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return `${m}:${sec.toString().padStart(2,'0')}`;
+}
+
+/* ====================================================
+   INIT
+==================================================== */
+buildSidebar();
+showWelcome();
+// Open first module in sidebar
+document.querySelector('.module-header').classList.add('open');
+</script>
+
+<!-- Podcast sticky bar -->
+<div id="podcast-bar">
+  <div class="pod-info">
+    <div class="pod-title" id="pod-title"></div>
+    <div class="pod-sub" id="pod-sub"></div>
+  </div>
+  <div class="pod-controls">
+    <button class="pod-btn" onclick="podSkip(-15)" title="−15s">⏮ 15</button>
+    <button class="pod-btn play-main" id="pod-play-btn" onclick="podPlayPause()">▶</button>
+    <button class="pod-btn" onclick="podSkip(15)" title="+15s">15 ⏭</button>
+  </div>
+  <div class="pod-progress-wrap">
+    <span class="pod-time" id="pod-current">0:00</span>
+    <input type="range" class="pod-seek" id="pod-seek" min="0" max="100" value="0" step="0.1" oninput="podSeek(this.value)" />
+    <span class="pod-time" id="pod-duration">0:00</span>
+  </div>
+  <select class="pod-speed" onchange="podSetSpeed(this.value)" title="Playback speed">
+    <option value="0.75">0.75×</option>
+    <option value="1" selected>1×</option>
+    <option value="1.25">1.25×</option>
+    <option value="1.5">1.5×</option>
+    <option value="2">2×</option>
+  </select>
+  <button class="pod-close" onclick="closePodcast()" title="Close">✕</button>
+</div>
+
+</body>
+</html>
