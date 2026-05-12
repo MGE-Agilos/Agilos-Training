@@ -2136,7 +2136,6 @@ function openPodcast(idx) {
   const p = PODCASTS[idx];
   const bar = document.getElementById('podcast-bar');
   document.getElementById('pod-title').textContent = p.title;
-  document.getElementById('pod-sub').textContent = p.sub;
   if (!podAudio || podAudio.src !== p.file) {
     if (podAudio) { podAudio.pause(); }
     podAudio = new Audio(p.file);
