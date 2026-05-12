@@ -681,13 +681,25 @@ body {
   transition: color .15s;
 }
 .pod-close:hover { color: #fff; }
-.pod-tracks { display: flex; align-items: center; gap: 5px; margin-top: 4px; }
-.pod-track-btn {
-  background: none; border: none; color: rgba(255,255,255,.5);
-  font-size: 1rem; cursor: pointer; padding: 0 3px; line-height: 1;
-  transition: color .15s;
+.pod-lang { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+.pod-lang-btn {
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 5px;
+  color: rgba(255,255,255,.55);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .5px;
+  cursor: pointer;
+  padding: 3px 9px;
+  transition: all .15s;
 }
-.pod-track-btn:hover { color: #fff; }
+.pod-lang-btn:hover { background: rgba(255,255,255,.2); color: #fff; }
+.pod-lang-btn.active {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
 #podcast-btn {
   background: rgba(255,255,255,.1);
   border: 1px solid rgba(255,255,255,.2);
@@ -2188,21 +2200,9 @@ function podSetSpeed(val) {
   if (podAudio) podAudio.playbackRate = parseFloat(val);
 }
 
-function podPrevTrack() {
-  if (podCurrent > 0) openPodcast(podCurrent - 1);
-}
-
-function podNextTrack() {
-  if (podCurrent < PODCASTS.length - 1) openPodcast(podCurrent + 1);
-}
-
 function updateTrackNav() {
-  const num = document.getElementById('pod-track-num');
-  const prev = document.getElementById('pod-prev-track');
-  const next = document.getElementById('pod-next-track');
-  if (num) num.textContent = `${podCurrent + 1} / ${PODCASTS.length}`;
-  if (prev) prev.style.opacity = podCurrent === 0 ? '0.3' : '1';
-  if (next) next.style.opacity = podCurrent === PODCASTS.length - 1 ? '0.3' : '1';
+  document.getElementById('pod-lang-en').classList.toggle('active', podCurrent === 0);
+  document.getElementById('pod-lang-fr').classList.toggle('active', podCurrent === 1);
 }
 
 function fmtTime(s) {
@@ -2225,11 +2225,9 @@ document.querySelector('.module-header').classList.add('open');
 <div id="podcast-bar">
   <div class="pod-info">
     <div class="pod-title" id="pod-title"></div>
-    <div class="pod-sub" id="pod-sub"></div>
-    <div class="pod-tracks">
-      <button class="pod-track-btn" id="pod-prev-track" onclick="podPrevTrack()" title="Épisode précédent">‹</button>
-      <span id="pod-track-num" style="font-size:.72rem;color:rgba(255,255,255,.5)">1 / 2</span>
-      <button class="pod-track-btn" id="pod-next-track" onclick="podNextTrack()" title="Épisode suivant">›</button>
+    <div class="pod-lang">
+      <button class="pod-lang-btn active" id="pod-lang-en" onclick="openPodcast(0)">🇬🇧 EN</button>
+      <button class="pod-lang-btn" id="pod-lang-fr" onclick="openPodcast(1)">🇫🇷 FR</button>
     </div>
   </div>
   <div class="pod-controls">
