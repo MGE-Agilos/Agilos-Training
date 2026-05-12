@@ -681,6 +681,13 @@ body {
   transition: color .15s;
 }
 .pod-close:hover { color: #fff; }
+.pod-tracks { display: flex; align-items: center; gap: 5px; margin-top: 4px; }
+.pod-track-btn {
+  background: none; border: none; color: rgba(255,255,255,.5);
+  font-size: 1rem; cursor: pointer; padding: 0 3px; line-height: 1;
+  transition: color .15s;
+}
+.pod-track-btn:hover { color: #fff; }
 #podcast-btn {
   background: rgba(255,255,255,.1);
   border: 1px solid rgba(255,255,255,.2);
@@ -2096,7 +2103,8 @@ function clearSearch() {
    PODCAST PLAYER
 ==================================================== */
 const PODCASTS = [
-  { file: 'Podcasts/How_to_beat_the_AI_failure_rate.m4a', title: 'How to Beat the AI Failure Rate', sub: 'Podcast · Module 1' }
+  { file: 'Podcasts/How_to_beat_the_AI_failure_rate.m4a', title: 'How to Beat the AI Failure Rate', sub: 'Podcast EN · Module 1' },
+  { file: 'Podcasts/Pourquoi_huit_projets_IA_sur_dix_échouent.m4a', title: 'Pourquoi 8 projets IA sur 10 échouent', sub: 'Podcast FR · Module 1' }
 ];
 let podAudio = null;
 let podPlaying = false;
@@ -2128,6 +2136,7 @@ function openPodcast(idx) {
   document.body.classList.add('pod-open');
   updatePlayBtn();
   updatePodProgress();
+  updateTrackNav();
 }
 
 function closePodcast() {
@@ -2179,6 +2188,23 @@ function podSetSpeed(val) {
   if (podAudio) podAudio.playbackRate = parseFloat(val);
 }
 
+function podPrevTrack() {
+  if (podCurrent > 0) openPodcast(podCurrent - 1);
+}
+
+function podNextTrack() {
+  if (podCurrent < PODCASTS.length - 1) openPodcast(podCurrent + 1);
+}
+
+function updateTrackNav() {
+  const num = document.getElementById('pod-track-num');
+  const prev = document.getElementById('pod-prev-track');
+  const next = document.getElementById('pod-next-track');
+  if (num) num.textContent = `${podCurrent + 1} / ${PODCASTS.length}`;
+  if (prev) prev.style.opacity = podCurrent === 0 ? '0.3' : '1';
+  if (next) next.style.opacity = podCurrent === PODCASTS.length - 1 ? '0.3' : '1';
+}
+
 function fmtTime(s) {
   if (!s || isNaN(s)) return '0:00';
   const m = Math.floor(s / 60);
@@ -2200,6 +2226,11 @@ document.querySelector('.module-header').classList.add('open');
   <div class="pod-info">
     <div class="pod-title" id="pod-title"></div>
     <div class="pod-sub" id="pod-sub"></div>
+    <div class="pod-tracks">
+      <button class="pod-track-btn" id="pod-prev-track" onclick="podPrevTrack()" title="Épisode précédent">‹</button>
+      <span id="pod-track-num" style="font-size:.72rem;color:rgba(255,255,255,.5)">1 / 2</span>
+      <button class="pod-track-btn" id="pod-next-track" onclick="podNextTrack()" title="Épisode suivant">›</button>
+    </div>
   </div>
   <div class="pod-controls">
     <button class="pod-btn" onclick="podSkip(-15)" title="−15s">⏮ 15</button>
